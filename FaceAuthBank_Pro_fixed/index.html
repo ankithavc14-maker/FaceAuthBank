@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>FaceAuth Bank — Secure Biometric Banking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#03070f;--surface:#070e1c;--card:#0c1526;--card2:#101d30;
+  --border:#1a2840;--border2:#243555;
+  --blue:#1a6fff;--blue2:#4d94ff;--cyan:#00c8ff;
+  --green:#00e676;--red:#ff3d5a;--amber:#ffb300;--purple:#9c6bff;
+  --text:#ddeeff;--sub:#6b8aad;--mono:'JetBrains Mono',monospace;
+  --font:'Plus Jakarta Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
+
+/* BG TEXTURE */
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(26,111,255,.08) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 40% at 80% 80%,rgba(0,200,255,.06) 0%,transparent 60%);
+  pointer-events:none}
+
+/* SCREENS */
+.screen{display:none;position:relative;z-index:1;min-height:100vh}
+.screen.active{display:flex}
+
+/* ─── NAV ─── */
+.topnav{display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 2.5rem;border-bottom:1px solid var(--border);
+  background:rgba(3,7,15,.7);backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:200}
+.logo{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.25rem;letter-spacing:-.5px;cursor:pointer}
+.logo-mark{width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:grid;place-items:center;font-size:1rem;flex-shrink:0}
+.logo em{color:var(--cyan);font-style:normal}
+.nav-right{display:flex;gap:.7rem;align-items:center}
+
+/* ─── BUTTONS ─── */
+.btn{padding:.55rem 1.2rem;border-radius:9px;font-family:var(--font);font-size:.84rem;
+  font-weight:600;cursor:pointer;border:none;transition:all .18s;display:inline-flex;
+  align-items:center;gap:.4rem}
+.btn-ghost{background:transparent;color:var(--sub);border:1px solid var(--border2)}
+.btn-ghost:hover{color:var(--text);border-color:var(--blue)}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue2);transform:translateY(-1px)}
+.btn-green{background:rgba(0,230,118,.15);color:var(--green);border:1px solid rgba(0,230,118,.3)}
+.btn-green:hover{background:rgba(0,230,118,.25)}
+.btn-red{background:rgba(255,61,90,.15);color:var(--red);border:1px solid rgba(255,61,90,.3)}
+.btn-red:hover{background:rgba(255,61,90,.25)}
+.btn-amber{background:rgba(255,179,0,.15);color:var(--amber);border:1px solid rgba(255,179,0,.3)}
+.btn-amber:hover{background:rgba(255,179,0,.25)}
+.btn-lg{padding:.8rem 2rem;font-size:.95rem;border-radius:12px}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+/* ─── HERO ─── */
+#screen-home{flex-direction:column}
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:5rem 2rem 4rem}
+.hero-pill{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem 1rem;
+  border-radius:999px;border:1px solid rgba(0,200,255,.25);background:rgba(0,200,255,.07);
+  font-size:.75rem;font-weight:700;color:var(--cyan);letter-spacing:.8px;text-transform:uppercase;margin-bottom:2rem}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+h1.hero-h{font-size:clamp(2.5rem,6vw,5rem);font-weight:800;letter-spacing:-2.5px;line-height:1.05;margin-bottom:1.4rem}
+.grad{background:linear-gradient(135deg,var(--blue2),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.1rem;color:var(--sub);max-width:540px;line-height:1.75;margin-bottom:3rem}
+.hero-cta{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.hero-stats{display:flex;gap:3.5rem;margin-top:4.5rem;flex-wrap:wrap;justify-content:center}
+.hstat-n{font-size:2.2rem;font-weight:800;font-family:var(--mono);color:var(--cyan)}
+.hstat-l{font-size:.75rem;color:var(--sub);margin-top:.15rem}
+
+/* FEATURES */
+.feat-sec{padding:4rem 2.5rem;max-width:1100px;margin:0 auto;width:100%}
+.sec-tag{font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue2);margin-bottom:.8rem}
+.sec-ttl{font-size:2rem;font-weight:800;letter-spacing:-1px;margin-bottom:2.5rem}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem;
+  transition:border-color .2s,transform .2s}
+.feat-card:hover{border-color:var(--blue);transform:translateY(-3px)}
+.feat-ic{font-size:1.8rem;margin-bottom:.9rem}
+.feat-card h3{font-size:.95rem;font-weight:700;margin-bottom:.4rem}
+.feat-card p{font-size:.82rem;color:var(--sub);line-height:1.65}
+
+/* ─── AUTH LAYOUT ─── */
+.auth-wrap{flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+.auth-box{background:var(--card);border:1px solid var(--border);border-radius:22px;
+  padding:2.6rem;width:100%;max-width:460px;position:relative;overflow:hidden}
+.auth-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--blue),var(--cyan),var(--green))}
+.auth-ttl{font-size:1.55rem;font-weight:800;letter-spacing:-.5px;margin-bottom:.35rem}
+.auth-sub{font-size:.84rem;color:var(--sub);margin-bottom:2rem;line-height:1.6}
+.back{display:inline-flex;align-items:center;gap:.35rem;color:var(--sub);font-size:.82rem;
+  cursor:pointer;margin-bottom:1.4rem;transition:color .2s}
+.back:hover{color:var(--text)}
+
+/* FACE SCANNER */
+.scanner-wrap{width:200px;height:200px;margin:0 auto 1.5rem;position:relative;
+  border-radius:50%;display:grid;place-items:center}
+.scanner-bg{position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle,rgba(26,111,255,.1),transparent 70%)}
+.ring1{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;
+  border-top-color:var(--cyan);border-right-color:var(--blue);animation:spin 2.5s linear infinite}
+.ring2{position:absolute;inset:12px;border-radius:50%;border:1px dashed rgba(0,200,255,.25);animation:rspin 5s linear infinite}
+.ring3{position:absolute;inset:24px;border-radius:50%;border:1px solid rgba(26,111,255,.15)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rspin{to{transform:rotate(-360deg)}}
+.scan-line{position:absolute;left:12%;right:12%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  animation:scanline 2s ease-in-out infinite;border-radius:2px}
+@keyframes scanline{0%{top:20%;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:80%;opacity:0}}
+.face-em{font-size:3.5rem;z-index:2;transition:all .3s}
+.scanner-wrap.ok .ring1{border-top-color:var(--green);border-right-color:var(--green)}
+.scanner-wrap.fail .ring1{border-top-color:var(--red);border-right-color:var(--red)}
+
+.scan-msg{text-align:center;font-size:.85rem;font-family:var(--mono);
+  margin-bottom:1.2rem;min-height:1.3rem;color:var(--cyan)}
+.scan-msg.ok{color:var(--green)}.scan-msg.err{color:var(--red)}
+
+/* FORM */
+.field{margin-bottom:1.1rem}
+.flabel{font-size:.72rem;font-weight:700;color:var(--sub);display:block;
+  margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.5px}
+.finput-wrap{position:relative}
+.ficon{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);
+  font-size:.95rem;color:var(--sub);pointer-events:none}
+input,select,textarea{width:100%;padding:.7rem .9rem .7rem 2.4rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  color:var(--text);font-family:var(--font);font-size:.9rem;outline:none;
+  transition:border-color .18s,box-shadow .18s}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,111,255,.12)}
+select{padding-left:.9rem;cursor:pointer}
+textarea{padding:.7rem .9rem;resize:vertical;min-height:70px}
+.no-icon{padding-left:.9rem!important}
+.input-curr{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);
+  font-weight:700;color:var(--cyan);font-size:1rem;font-family:var(--mono)}
+.curr-input{padding-left:2rem!important;font-family:var(--mono)!important;font-size:1.1rem!important}
+
+/* STEP DOTS */
+.steps{display:flex;gap:.5rem;margin-bottom:2rem;align-items:center}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .3s}
+.step-dot.done{background:var(--green)}
+.step-dot.active{background:var(--blue);width:22px;border-radius:4px}
+.step-label{font-size:.75rem;color:var(--sub);margin-left:.5rem}
+.reg-step{display:none}.reg-step.active{display:block}
+
+/* PROGRESS BAR */
+.prog-bar{height:4px;background:var(--border);border-radius:2px;margin-bottom:1.5rem;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));
+  border-radius:2px;transition:width .4s ease}
+
+/* ─── DASHBOARD ─── */
+#screen-dash{flex-direction:column}
+.dash-nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;
+  background:rgba(7,14,28,.85);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(16px);position:sticky;top:0;z-index:200}
+.dash-user{display:flex;align-items:center;gap:.8rem}
+.d-avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;
+  font-size:1rem;flex-shrink:0;border:2px solid var(--border2)}
+.d-name{font-weight:700;font-size:.9rem}
+.d-id{font-size:.72rem;color:var(--sub);font-family:var(--mono)}
+.verified-badge{display:flex;align-items:center;gap:.35rem;padding:.28rem .7rem;
+  border-radius:999px;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);
+  font-size:.74rem;color:var(--green);font-weight:600}
+.dash-main{max-width:1300px;margin:0 auto;padding:2rem;width:100%}
+
+/* ACCOUNT CARD */
+.acct-card{background:linear-gradient(135deg,#091833,#0b2040);border:1px solid rgba(26,111,255,.2);
+  border-radius:20px;padding:2rem;display:flex;align-items:center;
+  justify-content:space-between;flex-wrap:wrap;gap:1.5rem;
+  position:relative;overflow:hidden;margin-bottom:1.5rem}
+.acct-card::after{content:'';position:absolute;right:-80px;top:-80px;
+  width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,200,255,.1),transparent 70%)}
+.acct-label{font-size:.72rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px}
+.acct-bal{font-size:2.8rem;font-weight:800;font-family:var(--mono);color:var(--cyan);line-height:1;margin:.25rem 0}
+.acct-num{font-size:.8rem;color:var(--sub);font-family:var(--mono)}
+.acct-actions{display:flex;gap:.7rem;flex-wrap:wrap}
+
+/* STAT GRID */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+@media(max-width:900px){.stat-row{grid-template-columns:1fr 1fr}}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.3rem}
+.stat-lbl{font-size:.72rem;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.stat-val{font-size:1.5rem;font-weight:800;font-family:var(--mono)}
+.stat-sub{font-size:.73rem;color:var(--sub);margin-top:.2rem}
+
+/* PANELS */
+.panels{display:grid;grid-template-columns:1.2fr 1fr;gap:1.5rem}
+@media(max-width:850px){.panels{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.6rem}
+.panel-hd{font-size:.9rem;font-weight:700;margin-bottom:1.3rem;
+  display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.panel-hd span{color:var(--sub);font-size:.75rem;font-weight:400}
+
+/* TX LIST */
+.tx-list{display:flex;flex-direction:column;gap:.7rem;max-height:340px;overflow-y:auto}
+.tx-item{display:flex;align-items:center;gap:.9rem;padding:.85rem;
+  border-radius:12px;background:var(--surface);animation:up .3s ease both}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tx-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+  font-size:1rem;flex-shrink:0}
+.tx-ico.cr{background:rgba(0,230,118,.1)}.tx-ico.dr{background:rgba(255,61,90,.1)}
+.tx-ico.tr{background:rgba(156,107,255,.1)}.tx-ico.ch{background:rgba(255,179,0,.1)}
+.tx-info{flex:1;min-width:0}
+.tx-desc{font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-meta{font-size:.72rem;color:var(--sub);font-family:var(--mono);margin-top:.1rem}
+.tx-amt{font-family:var(--mono);font-weight:700;font-size:.9rem;white-space:nowrap}
+.tx-amt.cr{color:var(--green)}.tx-amt.dr{color:var(--red)}.tx-amt.tr{color:var(--purple)}.tx-amt.ch{color:var(--amber)}
+.tx-empty{text-align:center;color:var(--sub);font-size:.84rem;padding:2.5rem}
+
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.5rem}
+.qa-btn{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:.9rem;cursor:pointer;text-align:center;color:var(--text);font-family:var(--font);
+  transition:all .18s}
+.qa-btn:hover{border-color:var(--blue);background:rgba(26,111,255,.06)}
+.qa-ic{font-size:1.4rem;display:block;margin-bottom:.25rem}
+.qa-lbl{font-size:.78rem;font-weight:600}
+
+/* CHART */
+.mini-chart{display:flex;align-items:flex-end;gap:3px;height:60px;margin-top:.8rem}
+.mc-bar{flex:1;border-radius:3px 3px 0 0;
+  background:linear-gradient(0deg,var(--blue),var(--cyan));opacity:.6;
+  transition:height .4s ease,opacity .2s}
+.mc-bar:hover{opacity:1}
+
+/* LOAN PANEL */
+.loan-item{display:flex;align-items:center;justify-content:space-between;
+  padding:.75rem;border-radius:10px;background:var(--surface);margin-bottom:.6rem}
+.loan-info{font-size:.82rem}.loan-lbl{color:var(--sub);font-size:.72rem;margin-top:.1rem}
+.loan-bar-wrap{height:5px;background:var(--border);border-radius:3px;margin-top:.4rem;overflow:hidden}
+.loan-bar-fill{height:100%;border-radius:3px;background:var(--blue)}
+
+/* CARDS PANEL */
+.card-item{background:linear-gradient(135deg,#0a1f3a,#122a4a);
+  border:1px solid rgba(26,111,255,.2);border-radius:14px;padding:1.2rem;margin-bottom:.8rem}
+.card-num{font-family:var(--mono);font-size:.9rem;letter-spacing:2px;margin:.4rem 0}
+.card-chip{width:28px;height:20px;border-radius:4px;background:linear-gradient(135deg,var(--amber),#ffcc00);display:inline-block;margin-right:.5rem;vertical-align:middle}
+
+/* ─── ADMIN ─── */
+#screen-admin{flex-direction:column}
+.admin-main{max-width:1300px;margin:0 auto;padding:2rem;width:100%}
+.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+@media(max-width:800px){.admin-grid{grid-template-columns:1fr}}
+.admin-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.3rem}
+.users-table{width:100%;border-collapse:collapse;font-size:.84rem}
+.users-table th{text-align:left;padding:.7rem 1rem;font-size:.72rem;color:var(--sub);
+  font-weight:700;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.users-table td{padding:.75rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.users-table tr:last-child td{border-bottom:none}
+.users-table tr:hover td{background:var(--surface)}
+.badge{padding:.2rem .6rem;border-radius:6px;font-size:.72rem;font-weight:700}
+.badge-g{background:rgba(0,230,118,.1);color:var(--green)}
+.badge-r{background:rgba(255,61,90,.1);color:var(--red)}
+.badge-b{background:rgba(26,111,255,.1);color:var(--blue2)}
+
+/* ─── MODAL ─── */
+.modal-bg{display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(3,7,15,.85);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:1rem}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);
+  border-radius:20px;padding:2rem;width:100%;max-width:420px;
+  animation:mIn .22s ease}
+@keyframes mIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.modal-ttl{font-size:1.25rem;font-weight:800;margin-bottom:.3rem}
+.modal-sub{font-size:.83rem;color:var(--sub);margin-bottom:1.4rem;line-height:1.6}
+.modal-actions{display:flex;gap:.7rem;margin-top:1.4rem}
+.modal-actions .btn{flex:1;justify-content:center}
+
+/* FACE CONFIRM MODAL */
+.face-confirm{text-align:center;padding:.5rem 0}
+.fc-scanner{width:140px;height:140px;margin:0 auto 1rem;position:relative;
+  border-radius:50%;display:grid;place-items:center}
+.fc-scanner .ring1{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;
+  border-top-color:var(--cyan);border-right-color:var(--blue);animation:spin 2s linear infinite}
+.fc-scanner .ring2{position:absolute;inset:10px;border-radius:50%;border:1px dashed rgba(0,200,255,.2);animation:rspin 4s linear infinite}
+.fc-scanner .face-em{font-size:3rem}
+.fc-scanner .scan-line{position:absolute;left:10%;right:10%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  animation:scanline 1.8s ease-in-out infinite}
+.fc-scanner.ok .ring1{border-top-color:var(--green);border-right-color:var(--green)}
+.fc-scanner.fail .ring1{border-top-color:var(--red);border-right-color:var(--red)}
+
+/* ─── TOAST ─── */
+#toasts{position:fixed;bottom:1.5rem;right:1.5rem;z-index:900;
+  display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
+.toast{padding:.75rem 1.1rem;border-radius:12px;font-size:.84rem;font-weight:600;
+  display:flex;align-items:center;gap:.5rem;min-width:240px;
+  animation:tIn .28s ease;pointer-events:all}
+@keyframes tIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+.toast.ok{background:#0b2818;border:1px solid rgba(0,230,118,.3);color:var(--green)}
+.toast.err{background:#280b10;border:1px solid rgba(255,61,90,.3);color:var(--red)}
+.toast.info{background:#0b1828;border:1px solid rgba(0,200,255,.3);color:var(--cyan)}
+.toast.warn{background:#281e0b;border:1px solid rgba(255,179,0,.3);color:var(--amber)}
+
+/* MISC */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.divider{height:1px;background:var(--border);margin:1.2rem 0}
+.row{display:flex;gap:.8rem}
+.row .field{flex:1}
+.section-gap{margin-bottom:1.5rem}
+.info-box{background:rgba(0,200,255,.06);border:1px solid rgba(0,200,255,.18);
+  border-radius:10px;padding:.9rem 1rem;font-size:.8rem;color:var(--sub);line-height:1.7;margin-top:.8rem}
+.info-box strong{color:var(--cyan)}
+.acct-no-display{font-family:var(--mono);font-size:.85rem;color:var(--sub);
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:.5rem .8rem;display:inline-block;margin-top:.4rem}
+.tab-row{display:flex;gap:.4rem;margin-bottom:1.3rem;border-bottom:1px solid var(--border);padding-bottom:.8rem}
+.tab{padding:.4rem .9rem;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;
+  color:var(--sub);transition:all .18s;border:none;background:transparent;font-family:var(--font)}
+.tab.active{background:rgba(26,111,255,.12);color:var(--blue2)}
+.tab:hover:not(.active){color:var(--text)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:600px){.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div id="screen-home" class="screen active">
+  <nav class="topnav">
+    <div class="logo" onclick="go('screen-home')">
+      <div class="logo-mark">🏦</div>
+      FaceAuth<em>Bank</em>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn-ghost" onclick="go('screen-register')">Open Account</button>
+      <button class="btn btn-primary" onclick="go('screen-login')">Login →</button>
+      <button class="btn btn-ghost" onclick="adminLogin()">Admin</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-pill"><div class="pulse"></div>Live Biometric System Active</div>
+    <h1 class="hero-h">Your face is<br>your <span class="grad">password.</span></h1>
+    <p class="hero-sub">FaceAuthBank uses AI-powered facial recognition to authenticate every login and every transaction — zero passwords, zero PINs.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary btn-lg" onclick="go('screen-register')">🔐 Open Free Account</button>
+      <button class="btn btn-ghost btn-lg" onclick="go('screen-login')">Login with Face →</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hstat-n" id="hero-users">0</div><div class="hstat-l">Registered Users</div></div>
+      <div><div class="hstat-n">128-D</div><div class="hstat-l">Face Encoding</div></div>
+      <div><div class="hstat-n">99.4%</div><div class="hstat-l">Auth Accuracy</div></div>
+      <div><div class="hstat-n">&lt;1s</div><div class="hstat-l">Scan Time</div></div>
+    </div>
+  </section>
+
+  <section class="feat-sec">
+    <div class="sec-tag">Why FaceAuthBank</div>
+    <h2 class="sec-ttl">Built like a real bank</h2>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-ic">🧠</div><h3>AI Face Recognition</h3><p>128-dimensional encoding via <code style="color:var(--cyan)">face_recognition</code> library. Every transaction requires live face scan confirmation.</p></div>
+      <div class="feat-card"><div class="feat-ic">💳</div><h3>Full Banking Suite</h3><p>Deposits, withdrawals, fund transfers, fixed deposits, recurring deposits, and loan management.</p></div>
+      <div class="feat-card"><div class="feat-ic">📊</div><h3>Admin Dashboard</h3><p>Real-time view of all users, all transactions, system-wide stats, and account management tools.</p></div>
+      <div class="feat-card"><div class="feat-ic">🔒</div><h3>Transaction Auth</h3><p>Every financial operation triggers a face scan. No authenticated scan = no transaction. Ever.</p></div>
+      <div class="feat-card"><div class="feat-ic">📱</div><h3>Virtual Cards</h3><p>Generate virtual debit cards linked to your account for online transactions with a single tap.</p></div>
+      <div class="feat-card"><div class="feat-ic">📋</div><h3>Audit Logs</h3><p>Every login attempt and transaction is logged to <code style="color:var(--cyan)">bank_log.txt</code> with timestamps.</p></div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════ REGISTER ═══════════════ -->
+<div id="screen-register" class="screen auth-wrap">
+  <div class="auth-box">
+    <div class="back" onclick="go('screen-home')">← Back</div>
+    <div class="auth-ttl">Open Your Account</div>
+    <div class="auth-sub">Register with your details and capture your face for biometric security.</div>
+
+    <div class="steps">
+      <div class="step-dot active" id="sdot1"></div>
+      <div class="step-dot" id="sdot2"></div>
+      <div class="step-dot" id="sdot3"></div>
+      <span class="step-label" id="slabel">Step 1: Personal Details</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="reg-prog" style="width:33%"></div></div>
+
+    <!-- STEP 1 -->
+    <div class="reg-step active" id="rstep1">
+      <div class="row">
+        <div class="field">
+          <label class="flabel">First Name</label>
+          <div class="finput-wrap"><span class="ficon">👤</span><input id="r-fname" placeholder="Ankitha" type="text"></div>
+        </div>
+        <div class="field">
+          <label class="flabel">Last Name</label>
+          <div class="finput-wrap"><span class="ficon">👤</span><input id="r-lname" placeholder="Sharma" type="text"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="flabel">Email Address</label>
+        <div class="finput-wrap"><span class="ficon">📧</span><input id="r-email" type="email" placeholder="you@email.com"></div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label class="flabel">Phone Number</label>
+          <div class="finput-wrap"><span class="ficon">📱</span><input id="r-phone" type="tel" placeholder="9876543210"></div>
+        </div>
+        <div class="field">
+          <label class="flabel">Date of Birth</label>
+          <div class="finput-wrap"><span class="ficon">🗓️</span><input id="r-dob" type="date" class="no-icon" style="padding-left:.9rem"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="flabel">Address</label>
+        <textarea id="r-addr" placeholder="123 MG Road, Bengaluru, Karnataka 560001" class="no-icon" rows="2"></textarea>
+      </div>
+      <div class="field">
+        <label class="flabel">Account Type</label>
+        <select id="r-accttype" class="no-icon" style="padding-left:.9rem">
+          <option value="savings">Savings Account</option>
+          <option value="current">Current Account</option>
+          <option value="salary">Salary Account</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="regStep1()">Continue →</button>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="reg-step" id="rstep2">
+      <div class="field">
+        <label class="flabel">Nominee Name</label>
+        <div class="finput-wrap"><span class="ficon">👥</span><input id="r-nominee" placeholder="Parent / Spouse name"></div>
+      </div>
+      <div class="field">
+        <label class="flabel">Nominee Relation</label>
+        <select id="r-relation" class="no-icon" style="padding-left:.9rem">
+          <option>Father</option><option>Mother</option><option>Spouse</option>
+          <option>Son</option><option>Daughter</option><option>Sibling</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="flabel">ID Proof Type</label>
+        <select id="r-idtype" class="no-icon" style="padding-left:.9rem">
+          <option>Aadhaar Card</option><option>PAN Card</option>
+          <option>Passport</option><option>Voter ID</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="flabel">ID Number</label>
+        <div class="finput-wrap"><span class="ficon">🪪</span><input id="r-idnum" placeholder="XXXX-XXXX-XXXX"></div>
+      </div>
+      <div class="row">
+        <button class="btn btn-ghost btn-full" onclick="showRegStep(1)">← Back</button>
+        <button class="btn btn-primary btn-full" onclick="regStep2()">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: FACE CAPTURE -->
+    <div class="reg-step" id="rstep3">
+      <div class="scanner-wrap" id="reg-scanner">
+        <div class="scanner-bg"></div>
+        <div class="ring1"></div><div class="ring2"></div><div class="ring3"></div>
+        <div class="scan-line"></div>
+        <div class="face-em" id="reg-face-em">📷</div>
+        <video id="reg-video" autoplay playsinline muted style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;opacity:0.85;z-index:1"></video>
+      </div>
+      <div class="scan-msg" id="reg-scan-msg">Click "Start Camera" to begin</div>
+      <button class="btn btn-outline btn-full" id="reg-cam-btn" onclick="regStartCamera()" style="margin-bottom:.5rem">
+        📷 Start Camera
+      </button>
+      <button class="btn btn-primary btn-full" id="reg-scan-btn" onclick="regCaptureFace()" disabled>
+        📸 Capture Face &amp; Complete Registration
+      </button>
+      <div class="info-box" style="margin-top:1rem">
+        <strong>In production:</strong> runs <code>enroll_user.py</code> via webcam. Your 128-D face encoding is saved as <code>face_data/&lt;userid&gt;.npy</code>.
+      </div>
+      <div style="margin-top:.8rem">
+        <button class="btn btn-ghost" style="font-size:.78rem" onclick="showRegStep(2)">← Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="screen-login" class="screen auth-wrap">
+  <div class="auth-box">
+    <div class="back" onclick="go('screen-home')">← Back</div>
+    <div class="auth-ttl">Face Login</div>
+    <div class="auth-sub">Select your account and authenticate with your face to access banking services.</div>
+
+    <div class="scanner-wrap" id="login-scanner">
+      <div class="scanner-bg"></div>
+      <div class="ring1"></div><div class="ring2"></div><div class="ring3"></div>
+      <div class="scan-line"></div>
+      <div class="face-em" id="login-face-em">😐</div>
+      <video id="login-video" autoplay playsinline muted style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;opacity:0.85;z-index:1"></video>
+    </div>
+    <div class="scan-msg" id="login-scan-msg">Select an account below</div>
+
+    <div class="field">
+      <label class="flabel">Select Account</label>
+      <select id="login-user-sel" class="no-icon" style="padding-left:.9rem" onchange="onLoginSelect()">
+        <option value="">— Choose your account —</option>
+      </select>
+    </div>
+    <button class="btn btn-primary btn-full" id="login-btn" onclick="doLogin()" disabled>
+      🔍 Scan Face &amp; Login
+    </button>
+    <div style="text-align:center;margin-top:1rem;font-size:.82rem;color:var(--sub)">
+      No account? <span style="color:var(--cyan);cursor:pointer" onclick="go('screen-register')">Open one free →</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div id="screen-dash" class="screen">
+  <nav class="dash-nav">
+    <div class="logo" onclick="go('screen-home')" style="cursor:pointer">
+      <div class="logo-mark">🏦</div>FaceAuth<em style="color:var(--cyan);font-style:normal">Bank</em>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <div class="verified-badge"><div class="pulse"></div>Face Verified</div>
+      <div class="dash-user">
+        <div class="d-avatar" id="d-avatar"></div>
+        <div><div class="d-name" id="d-name"></div><div class="d-id" id="d-acctno"></div></div>
+      </div>
+      <button class="btn btn-ghost" onclick="logout()" style="font-size:.8rem;padding:.4rem .9rem">Logout</button>
+    </div>
+  </nav>
+
+  <div class="dash-main">
+    <!-- ACCOUNT CARD -->
+    <div class="acct-card">
+      <div>
+        <div class="acct-label">Available Balance</div>
+        <div class="acct-bal" id="d-balance">₹0.00</div>
+        <div class="acct-num" id="d-acctno2"></div>
+        <div style="margin-top:.5rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+          <span id="d-accttype" style="font-size:.75rem;background:rgba(26,111,255,.12);color:var(--blue2);padding:.2rem .7rem;border-radius:6px;font-weight:600"></span>
+          <span style="font-size:.75rem;color:var(--sub)">IFSC: FAB0000001 · Branch: Bengaluru Main</span>
+        </div>
+      </div>
+      <div class="acct-actions">
+        <button class="btn btn-green" onclick="openTxModal('deposit')">＋ Deposit</button>
+        <button class="btn btn-red" onclick="openTxModal('withdraw')">－ Withdraw</button>
+        <button class="btn btn-primary" onclick="openTxModal('transfer')">⇄ Transfer</button>
+        <button class="btn btn-ghost" onclick="openTxModal('cheque')">📝 Cheque</button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-lbl">Total Credited</div><div class="stat-val" id="d-credited" style="color:var(--green)">₹0</div><div class="stat-sub">All deposits</div></div>
+      <div class="stat-card"><div class="stat-lbl">Total Debited</div><div class="stat-val" id="d-debited" style="color:var(--red)">₹0</div><div class="stat-sub">All withdrawals</div></div>
+      <div class="stat-card"><div class="stat-lbl">Transactions</div><div class="stat-val" id="d-txcount" style="color:var(--cyan)">0</div><div class="stat-sub">This session</div></div>
+      <div class="stat-card"><div class="stat-lbl">Auth Events</div><div class="stat-val" id="d-authcount" style="color:var(--purple)">0</div><div class="stat-sub">Face scans today</div></div>
+    </div>
+
+    <!-- TAB BAR -->
+    <div class="tab-row">
+      <button class="tab active" onclick="switchTab('txns')">Transactions</button>
+      <button class="tab" onclick="switchTab('services')">Services</button>
+      <button class="tab" onclick="switchTab('cards')">My Cards</button>
+      <button class="tab" onclick="switchTab('loans')">Loans & FD</button>
+      <button class="tab" onclick="switchTab('profile')">Profile</button>
+    </div>
+
+    <!-- TAB: TRANSACTIONS -->
+    <div class="tab-panel active" id="tab-txns">
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-hd">📋 Transaction History <span id="tx-count-lbl">0 records</span></div>
+          <div class="tx-list" id="tx-list"><div class="tx-empty">No transactions yet.<br>Start with a deposit above.</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:1.2rem">
+          <div class="panel">
+            <div class="panel-hd">⚡ Quick Actions</div>
+            <div class="qa-grid">
+              <button class="qa-btn" onclick="openTxModal('deposit')"><span class="qa-ic">💰</span><span class="qa-lbl">Deposit</span></button>
+              <button class="qa-btn" onclick="openTxModal('withdraw')"><span class="qa-ic">💸</span><span class="qa-lbl">Withdraw</span></button>
+              <button class="qa-btn" onclick="openTxModal('transfer')"><span class="qa-ic">🔄</span><span class="qa-lbl">Transfer</span></button>
+              <button class="qa-btn" onclick="openTxModal('cheque')"><span class="qa-ic">📝</span><span class="qa-lbl">Cheque</span></button>
+              <button class="qa-btn" onclick="openTxModal('fd')"><span class="qa-ic">🏛️</span><span class="qa-lbl">Fixed Deposit</span></button>
+              <button class="qa-btn" onclick="openTxModal('rd')"><span class="qa-ic">📅</span><span class="qa-lbl">Recurring Dep.</span></button>
+              <button class="qa-btn" onclick="openTxModal('loan')"><span class="qa-ic">💼</span><span class="qa-lbl">Loan Apply</span></button>
+              <button class="qa-btn" onclick="miniStatement()"><span class="qa-ic">📊</span><span class="qa-lbl">Statement</span></button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd">📈 Activity Chart</div>
+            <div class="mini-chart" id="mini-chart">
+              <div class="mc-bar" style="height:15%"></div><div class="mc-bar" style="height:15%"></div>
+              <div class="mc-bar" style="height:15%"></div><div class="mc-bar" style="height:15%"></div>
+              <div class="mc-bar" style="height:15%"></div><div class="mc-bar" style="height:15%"></div>
+              <div class="mc-bar" style="height:15%"></div>
+            </div>
+            <div style="font-size:.7rem;color:var(--sub);margin-top:.4rem">Transaction amounts per operation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: SERVICES -->
+    <div class="tab-panel" id="tab-services">
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-hd">🏛️ Fixed Deposit</div>
+          <div style="font-size:.83rem;color:var(--sub);margin-bottom:1rem;line-height:1.7">Earn up to <strong style="color:var(--cyan)">7.5% p.a.</strong> on Fixed Deposits. Lock in your savings for assured returns.</div>
+          <button class="btn btn-primary btn-full" onclick="openTxModal('fd')">Create FD →</button>
+        </div>
+        <div class="panel">
+          <div class="panel-hd">📅 Recurring Deposit</div>
+          <div style="font-size:.83rem;color:var(--sub);margin-bottom:1rem;line-height:1.7">Save monthly with <strong style="color:var(--cyan)">6.25% p.a.</strong> RD. Build wealth systematically over time.</div>
+          <button class="btn btn-primary btn-full" onclick="openTxModal('rd')">Open RD →</button>
+        </div>
+        <div class="panel">
+          <div class="panel-hd">💼 Personal Loan</div>
+          <div style="font-size:.83rem;color:var(--sub);margin-bottom:1rem;line-height:1.7">Get instant loans up to <strong style="color:var(--cyan)">₹5,00,000</strong> at <strong style="color:var(--cyan)">10.5% p.a.</strong> with minimal documentation.</div>
+          <button class="btn btn-primary btn-full" onclick="openTxModal('loan')">Apply Loan →</button>
+        </div>
+        <div class="panel">
+          <div class="panel-hd">📝 Cheque Services</div>
+          <div style="font-size:.83rem;color:var(--sub);margin-bottom:1rem;line-height:1.7">Issue cheques to individuals or businesses. Requires face authentication for every cheque issued.</div>
+          <button class="btn btn-primary btn-full" onclick="openTxModal('cheque')">Issue Cheque →</button>
+        </div>
+        <div class="panel">
+          <div class="panel-hd">📱 NEFT / RTGS</div>
+          <div style="font-size:.83rem;color:var(--sub);margin-bottom:1rem;line-height:1.7">Transfer funds to any bank account in India via NEFT (free) or RTGS (same-day settlement, ₹2+ lakh).</div>
+          <button class="btn btn-primary btn-full" onclick="openTxModal('neft')">Send NEFT/RTGS →</button>
+        </div>
+        <div class="panel">
+          <div class="panel-hd">💳 Virtual Card</div>
+          <div style="font-size:.83rem;color:var(--sub);margin-bottom:1rem;line-height:1.7">Generate a virtual debit card instantly for safe online shopping without exposing your main card details.</div>
+          <button class="btn btn-primary btn-full" onclick="generateVirtualCard()">Generate Card →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: CARDS -->
+    <div class="tab-panel" id="tab-cards">
+      <div class="panel" style="max-width:600px">
+        <div class="panel-hd">💳 My Cards</div>
+        <div id="cards-list"></div>
+        <button class="btn btn-primary" onclick="openTxModal('newcard')" style="margin-top:.5rem">+ Request New Card</button>
+      </div>
+    </div>
+
+    <!-- TAB: LOANS & FD -->
+    <div class="tab-panel" id="tab-loans">
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-hd">🏛️ Fixed Deposits</div>
+          <div id="fd-list"><div class="tx-empty">No FDs active.</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hd">💼 Loans</div>
+          <div id="loan-list"><div class="tx-empty">No active loans.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: PROFILE -->
+    <div class="tab-panel" id="tab-profile">
+      <div class="panel" style="max-width:600px">
+        <div class="panel-hd">👤 Account Profile</div>
+        <div id="profile-content" style="font-size:.88rem;line-height:2;color:var(--sub)"></div>
+        <div class="divider"></div>
+        <div class="panel-hd" style="margin-top:1rem">🔐 Security Log</div>
+        <div id="sec-log" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:.4rem"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ADMIN DASHBOARD ═══════════════ -->
+<div id="screen-admin" class="screen">
+  <nav class="dash-nav">
+    <div class="logo"><div class="logo-mark">🏦</div>FaceAuth<em style="color:var(--cyan);font-style:normal">Bank</em> <span style="font-size:.72rem;color:var(--sub);margin-left:.5rem;background:rgba(255,61,90,.1);border:1px solid rgba(255,61,90,.2);color:var(--red);padding:.15rem .5rem;border-radius:5px;font-weight:700">ADMIN</span></div>
+    <div style="display:flex;gap:.7rem;align-items:center">
+      <span style="font-size:.8rem;color:var(--sub)">Logged in as Administrator</span>
+      <button class="btn btn-ghost" onclick="go('screen-home')" style="font-size:.8rem;padding:.4rem .9rem">Logout</button>
+    </div>
+  </nav>
+  <div class="admin-main">
+    <div class="admin-grid">
+      <div class="admin-stat"><div class="stat-lbl">Total Users</div><div class="stat-val" id="adm-users" style="color:var(--cyan)">0</div></div>
+      <div class="admin-stat"><div class="stat-lbl">Total Deposits</div><div class="stat-val" id="adm-deposits" style="color:var(--green)">₹0</div></div>
+      <div class="admin-stat"><div class="stat-lbl">Total Withdrawals</div><div class="stat-val" id="adm-withdrawals" style="color:var(--red)">₹0</div></div>
+    </div>
+
+    <div class="tab-row">
+      <button class="tab active" onclick="adminTab('users')">All Users</button>
+      <button class="tab" onclick="adminTab('txns')">All Transactions</button>
+      <button class="tab" onclick="adminTab('logs')">Auth Logs</button>
+    </div>
+
+    <div class="panel" id="admin-users-panel">
+      <div class="panel-hd">👥 Registered Users</div>
+      <div style="overflow-x:auto">
+        <table class="users-table" id="admin-users-table">
+          <thead><tr>
+            <th>Account No.</th><th>Name</th><th>Type</th>
+            <th>Balance</th><th>Txns</th><th>Status</th>
+          </tr></thead>
+          <tbody id="admin-users-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel" id="admin-txns-panel" style="display:none">
+      <div class="panel-hd">📋 All Transactions</div>
+      <div style="overflow-x:auto">
+        <table class="users-table" id="admin-txns-table">
+          <thead><tr>
+            <th>Time</th><th>User</th><th>Type</th><th>Amount</th><th>Description</th><th>Balance After</th>
+          </tr></thead>
+          <tbody id="admin-txns-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel" id="admin-logs-panel" style="display:none">
+      <div class="panel-hd">🔐 Auth / Security Logs</div>
+      <div id="admin-log-list" style="display:flex;flex-direction:column;gap:.4rem;max-height:400px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- FACE CONFIRM -->
+<div class="modal-bg" id="modal-face">
+  <div class="modal" style="max-width:360px;text-align:center">
+    <div class="face-confirm">
+      <div class="modal-ttl" id="face-modal-title">Face Verification</div>
+      <div class="modal-sub" id="face-modal-sub">Look at the camera to confirm this transaction</div>
+      <div class="fc-scanner" id="fc-scanner">
+        <div class="ring1"></div><div class="ring2"></div>
+        <div class="scan-line"></div>
+        <div class="face-em" id="fc-face-em">😐</div>
+        <video id="face-video" autoplay playsinline muted style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;opacity:0.85;z-index:1"></video>
+      </div>
+      <div class="scan-msg" id="fc-msg">Scanning...</div>
+      <div id="fc-action-info" style="font-size:.82rem;color:var(--sub);background:var(--surface);border-radius:8px;padding:.6rem;margin:.5rem 0"></div>
+    </div>
+    <div style="display:flex;gap:.7rem;margin-top:.5rem">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeFaceModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEPOSIT -->
+<div class="modal-bg" id="modal-deposit">
+  <div class="modal">
+    <div class="modal-ttl">💰 Deposit Cash</div>
+    <div class="modal-sub">Add funds to your savings account. Requires face authentication.</div>
+    <div class="field"><label class="flabel">Amount (₹)</label>
+      <div class="finput-wrap"><span class="input-curr">₹</span><input type="number" id="dep-amt" class="curr-input" placeholder="0.00" min="1"></div>
+    </div>
+    <div class="field"><label class="flabel">Source of Funds</label>
+      <select id="dep-src" class="no-icon" style="padding-left:.9rem">
+        <option>Cash Deposit</option><option>Salary Credit</option><option>Business Income</option><option>Other</option>
+      </select>
+    </div>
+    <div class="field"><label class="flabel">Remarks (optional)</label>
+      <div class="finput-wrap"><span class="ficon">📝</span><input id="dep-rem" placeholder="e.g. Monthly savings"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('deposit')">Cancel</button>
+      <button class="btn btn-green" onclick="confirmTx('deposit')">Verify &amp; Deposit →</button>
+    </div>
+  </div>
+</div>
+
+<!-- WITHDRAW -->
+<div class="modal-bg" id="modal-withdraw">
+  <div class="modal">
+    <div class="modal-ttl">💸 Withdraw Cash</div>
+    <div class="modal-sub">Withdraw funds. Maximum ₹50,000 per transaction. Face scan required.</div>
+    <div class="field"><label class="flabel">Amount (₹)</label>
+      <div class="finput-wrap"><span class="input-curr">₹</span><input type="number" id="wd-amt" class="curr-input" placeholder="0.00" min="1" max="50000"></div>
+    </div>
+    <div class="field"><label class="flabel">Withdrawal Mode</label>
+      <select id="wd-mode" class="no-icon" style="padding-left:.9rem">
+        <option>Counter Withdrawal</option><option>ATM</option><option>Self Cheque</option>
+      </select>
+    </div>
+    <div class="field"><label class="flabel">Remarks</label>
+      <div class="finput-wrap"><span class="ficon">📝</span><input id="wd-rem" placeholder="e.g. Personal expense"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('withdraw')">Cancel</button>
+      <button class="btn btn-red" onclick="confirmTx('withdraw')">Verify &amp; Withdraw →</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSFER -->
+<div class="modal-bg" id="modal-transfer">
+  <div class="modal">
+    <div class="modal-ttl">🔄 Fund Transfer</div>
+    <div class="modal-sub">Transfer money within FaceAuthBank. Face authentication required.</div>
+    <div class="field"><label class="flabel">Transfer To</label>
+      <select id="tr-to" class="no-icon" style="padding-left:.9rem"><option value="">— Select recipient —</option></select>
+    </div>
+    <div class="field"><label class="flabel">Amount (₹)</label>
+      <div class="finput-wrap"><span class="input-curr">₹</span><input type="number" id="tr-amt" class="curr-input" placeholder="0.00" min="1"></div>
+    </div>
+    <div class="field"><label class="flabel">Remarks</label>
+      <div class="finput-wrap"><span class="ficon">📝</span><input id="tr-rem" placeholder="e.g. Rent payment"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('transfer')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmTx('transfer')">Verify &amp; Transfer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHEQUE -->
+<div class="modal-bg" id="modal-cheque">
+  <div class="modal">
+    <div class="modal-ttl">📝 Issue Cheque</div>
+    <div class="modal-sub">Issue a bearer or order cheque. Requires face authentication.</div>
+    <div class="field"><label class="flabel">Pay To (Name)</label>
+      <div class="finput-wrap"><span class="ficon">👤</span><input id="chq-to" placeholder="Payee full name"></div>
+    </div>
+    <div class="field"><label class="flabel">Amount (₹)</label>
+      <div class="finput-wrap"><span class="input-curr">₹</span><input type="number" id="chq-amt" class="curr-input" placeholder="0.00" min="1"></div>
+    </div>
+    <div class="field"><label class="flabel">Cheque Type</label>
+      <select id="chq-type" class="no-icon" style="padding-left:.9rem">
+        <option>Bearer Cheque</option><option>Order Cheque</option><option>Crossed Cheque</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('cheque')">Cancel</button>
+      <button class="btn btn-amber" onclick="confirmTx('cheque')">Verify &amp; Issue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- FD -->
+<div class="modal-bg" id="modal-fd">
+  <div class="modal">
+    <div class="modal-ttl">🏛️ Open Fixed Deposit</div>
+    <div class="modal-sub">Earn up to 7.5% p.a. on Fixed Deposits. Min ₹1,000.</div>
+    <div class="field"><label class="flabel">Principal Amount (₹)</label>
+      <div class="finput-wrap"><span class="input-curr">₹</span><input type="number" id="fd-amt" class="curr-input" placeholder="10000" min="1000" oninput="calcFD()"></div>
+    </div>
+    <div class="field"><label class="flabel">Tenure</label>
+      <select id="fd-tenure" class="no-icon" style="padding-left:.9rem" onchange="calcFD()">
+        <option value="12">1 Year (7.0% p.a.)</option>
+        <option value="24">2 Years (7.25% p.a.)</option>
+        <option value="36">3 Years (7.5% p.a.)</option>
+        <option value="60">5 Years (7.5% p.a.)</option>
+      </select>
+    </div>
+    <div id="fd-calc" style="background:var(--surface);border-radius:10px;padding:.9rem;font-size:.83rem;color:var(--sub);margin-bottom:.5rem;line-height:1.9"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('fd')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmTx('fd')">Verify &amp; Create FD →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RD -->
+<div class="modal-bg" id="modal-rd">
+  <div class="modal">
+    <div class="modal-ttl">📅 Open Recurring Deposit</div>
+    <div class="modal-sub">Invest monthly at 6.25% p.a. Min ₹500/month.</div>
+    <div class="field"><label class="flabel">Monthly Amount (₹)</label>
+      <div class="finput-wrap"><span class="input-curr">₹</span><input type="number" id="rd-amt" class="curr-input" placeholder="500" min="500"></div>
+    </div>
+    <div class="field"><label class="flabel">Tenure (months)</label>
+      <select id="rd-tenure" class="no-icon" style="padding-left:.9rem">
+        <option value="12">12 months</option><option value="24">24 months</option>
+        <option value="36">36 months</option><option value="60">60 months</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('rd')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmTx('rd')">Verify &amp; Open RD →</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOAN -->
+<div class="modal-bg" id="modal-loan">
+  <div class="modal">
+    <div class="modal-ttl">💼 Apply for Loan</div>
+    <div class="modal-sub">Instant personal loans at 10.5% p.a. Up to ₹5,00,000.</div>
+    <div class="field"><label class="flabel">Loan Amount (₹)</label>
+      <div class="finput-wrap"><span class="input-curr">₹</span><input type="number" id="ln-amt" class="curr-input" placeholder="100000" max="500000" oninput="calcLoan()"></div>
+    </div>
+    <div class="field"><label class="flabel">Repayment Period</label>
+      <select id="ln-tenure" class="no-icon" style="padding-left:.9rem" onchange="calcLoan()">
+        <option value="12">1 Year (12 EMIs)</option>
+        <option value="24">2 Years (24 EMIs)</option>
+        <option value="36">3 Years (36 EMIs)</option>
+        <option value="60">5 Years (60 EMIs)</option>
+      </select>
+    </div>
+    <div id="ln-calc" style="background:var(--surface);border-radius:10px;padding:.9rem;font-size:.83rem;color:var(--sub);margin-bottom:.5rem;line-height:1.9"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('loan')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmTx('loan')">Verify &amp; Apply →</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEFT -->
+<div class="modal-bg" id="modal-neft">
+  <div class="modal">
+    <div class="modal-ttl">📱 NEFT / RTGS Transfer</div>
+    <div class="modal-sub">Transfer to any bank in India. Free via NEFT; ₹25 for RTGS.</div>
+    <div class="field"><label class="flabel">Beneficiary Name</label>
+      <div class="finput-wrap"><span class="ficon">👤</span><input id="neft-name" placeholder="Full name as per bank"></div>
+    </div>
+    <div class="field"><label class="flabel">Account Number</label>
+      <div class="finput-wrap"><span class="ficon">🏦</span><input id="neft-acc" placeholder="00000000000000"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label class="flabel">IFSC Code</label>
+        <div class="finput-wrap"><span class="ficon">🔤</span><input id="neft-ifsc" placeholder="SBIN0001234"></div>
+      </div>
+      <div class="field"><label class="flabel">Amount (₹)</label>
+        <div class="finput-wrap"><span class="input-curr">₹</span><input type="number" id="neft-amt" class="curr-input" placeholder="0.00"></div>
+      </div>
+    </div>
+    <div class="field"><label class="flabel">Transfer Mode</label>
+      <select id="neft-mode" class="no-icon" style="padding-left:.9rem">
+        <option>NEFT (Free, within 2 hrs)</option>
+        <option>RTGS (₹25 charge, instant, min ₹2L)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('neft')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmTx('neft')">Verify &amp; Send →</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW CARD -->
+<div class="modal-bg" id="modal-newcard">
+  <div class="modal">
+    <div class="modal-ttl">💳 Request New Card</div>
+    <div class="modal-sub">Request a physical or virtual debit card for your account.</div>
+    <div class="field"><label class="flabel">Card Type</label>
+      <select id="nc-type" class="no-icon" style="padding-left:.9rem">
+        <option>Virtual Debit Card (Instant)</option>
+        <option>Rupay Classic (3–5 days)</option>
+        <option>Visa Classic (3–5 days)</option>
+        <option>Mastercard Gold (5–7 days)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('newcard')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmTx('newcard')">Verify &amp; Request →</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATEMENT -->
+<div class="modal-bg" id="modal-statement">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-ttl">📊 Account Statement</div>
+    <div class="modal-sub" id="stmt-sub"></div>
+    <div id="stmt-body" style="font-size:.8rem;line-height:2;font-family:var(--mono);
+      color:var(--sub);max-height:320px;overflow-y:auto;background:var(--surface);
+      border-radius:10px;padding:1rem;white-space:pre-wrap"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('statement')">Close</button>
+      <button class="btn btn-primary" onclick="printStatement()">🖨️ Print / Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<!-- Hidden video elements for real webcam capture -->
+<video id="reg-video"  autoplay playsinline muted style="display:none;width:100%;border-radius:12px;margin-top:.5rem"></video>
+<video id="login-video" autoplay playsinline muted style="display:none;width:100%;border-radius:12px;margin-top:.5rem"></video>
+<video id="face-video"  autoplay playsinline muted style="display:none;width:100%;border-radius:12px;margin-top:.5rem"></video>
+<canvas id="face-canvas" style="display:none"></canvas>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// FaceAuthBank — Full-Stack Frontend (connected to Flask API)
+// ═══════════════════════════════════════════════════════════
+
+const API = 'http://localhost:5000/api';
+const ADMIN_PW = 'admin123';
+
+// ═══════════════════════════════════════════════════════════
+// REAL WEBCAM ENGINE
+// ═══════════════════════════════════════════════════════════
+const Cam = {
+  stream: null,
+
+  async start(videoEl) {
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 640, height: 480, facingMode: 'user' }, audio: false
+      });
+      videoEl.srcObject = this.stream;
+      await new Promise(r => videoEl.onloadedmetadata = r);
+      videoEl.play();
+      return true;
+    } catch(e) {
+      console.warn('Camera error:', e);
+      return false;
+    }
+  },
+
+  stop() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(t => t.stop());
+      this.stream = null;
+    }
+  },
+
+  /** Capture a single frame from a <video> element as base64 JPEG */
+  captureFrame(videoEl, quality = 0.85) {
+    const canvas = document.createElement('canvas');
+    canvas.width  = videoEl.videoWidth  || 640;
+    canvas.height = videoEl.videoHeight || 480;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(videoEl, 0, 0);
+    return canvas.toDataURL('image/jpeg', quality);
+  },
+
+  /** Capture N frames with a delay between each (for enrollment) */
+  async captureFrames(videoEl, n = 4, delayMs = 400) {
+    const frames = [];
+    for (let i = 0; i < n; i++) {
+      frames.push(this.captureFrame(videoEl));
+      if (i < n - 1) await new Promise(r => setTimeout(r, delayMs));
+    }
+    return frames;
+  }
+};
+
+// ─── Runtime state ────────────────────────────────────────
+let USERS      = {};   // uid → user object (loaded from API)
+let ALL_TX     = [];   // admin: all transactions
+let AUTH_LOG   = [];   // security log (from API)
+let CU         = null; // current user id
+let CU_DATA    = null; // full user object
+let pendingTx  = null;
+let chartData  = [];
+let authCount  = 0;
+
+// ─── Helpers ──────────────────────────────────────────────
+function fmt(n){ return '₹' + parseFloat(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function now(){ return new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}); }
+function nowShort(){ return new Date().toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata'}); }
+
+async function api(path, method='GET', body=null, extraHeaders={}) {
+  const opts = { method, headers: { 'Content-Type': 'application/json', ...extraHeaders } };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const res = await fetch(API + path, opts);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'API error');
+    return data;
+  } catch(e) {
+    toast('API Error: ' + e.message, 'err');
+    throw e;
+  }
+}
+
+// ─── Navigation ───────────────────────────────────────────
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='screen-home') refreshHeroCount();
+}
+
+async function refreshHeroCount(){
+  try {
+    const users = await api('/users');
+    document.getElementById('hero-users').textContent = users.length;
+  } catch(e) {
+    document.getElementById('hero-users').textContent = '0';
+  }
+}
+
+function switchTab(t){
+  document.querySelectorAll('#screen-dash .tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  event.target.classList.add('active');
+  if(t==='profile') renderProfile();
+  if(t==='cards') renderCards();
+  if(t==='loans') renderLoans();
+}
+
+function adminTab(t){
+  document.querySelectorAll('#screen-admin .tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('admin-users-panel').style.display='none';
+  document.getElementById('admin-txns-panel').style.display='none';
+  document.getElementById('admin-logs-panel').style.display='none';
+  document.getElementById('admin-'+t+'-panel').style.display='block';
+  event.target.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════
+// REGISTER
+// ═══════════════════════════════════════════════════════════
+let regData = {};
+function showRegStep(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('rstep'+i).classList.toggle('active',i===n);
+    const dot = document.getElementById('sdot'+i);
+    dot.classList.toggle('active',i===n);
+    dot.classList.toggle('done',i<n);
+  });
+  const labels = ['Step 1: Personal Details','Step 2: ID & Nominee','Step 3: Face Capture'];
+  document.getElementById('slabel').textContent = labels[n-1];
+  document.getElementById('reg-prog').style.width = (n/3*100)+'%';
+}
+
+function regStep1(){
+  const fn=document.getElementById('r-fname').value.trim();
+  const ln=document.getElementById('r-lname').value.trim();
+  const em=document.getElementById('r-email').value.trim();
+  const ph=document.getElementById('r-phone').value.trim();
+  if(!fn||!ln){toast('Enter your full name.','err');return;}
+  if(!em||!em.includes('@')){toast('Enter a valid email.','err');return;}
+  if(!ph||ph.length<10){toast('Enter a valid 10-digit phone number.','err');return;}
+  regData = {fname:fn,lname:ln,email:em,phone:ph,
+    dob:document.getElementById('r-dob').value,
+    addr:document.getElementById('r-addr').value,
+    acct_type:document.getElementById('r-accttype').value};
+  showRegStep(2);
+}
+
+function regStep2(){
+  const nom=document.getElementById('r-nominee').value.trim();
+  const idn=document.getElementById('r-idnum').value.trim();
+  if(!nom){toast('Enter nominee name.','err');return;}
+  if(!idn){toast('Enter ID number.','err');return;}
+  regData.nominee=nom;
+  regData.relation=document.getElementById('r-relation').value;
+  regData.idtype=document.getElementById('r-idtype').value;
+  regData.idnum=idn;
+  showRegStep(3);
+}
+
+// ─── Start camera for registration ────────────────────────
+async function regStartCamera(){
+  const video = document.getElementById('reg-video');
+  const em    = document.getElementById('reg-face-em');
+  const msg   = document.getElementById('reg-scan-msg');
+  const camBtn= document.getElementById('reg-cam-btn');
+  const capBtn= document.getElementById('reg-scan-btn');
+
+  msg.textContent = '📷 Requesting camera access...';
+  camBtn.disabled = true;
+
+  const ok = await Cam.start(video);
+  if(!ok){
+    msg.textContent = '❌ Camera access denied. Please allow camera in browser settings.';
+    msg.className='scan-msg err';
+    camBtn.disabled = false;
+    return;
+  }
+  // Show live video feed inside scanner
+  video.style.display = 'block';
+  em.style.display    = 'none';
+  msg.textContent     = '😊 Position your face in the circle, then click Capture';
+  msg.className       = 'scan-msg ok';
+  capBtn.disabled     = false;
+  camBtn.style.display= 'none';
+}
+
+async function regCaptureFace(){
+  const btn  = document.getElementById('reg-scan-btn');
+  const sc   = document.getElementById('reg-scanner');
+  const msg  = document.getElementById('reg-scan-msg');
+  const em   = document.getElementById('reg-face-em');
+  const video= document.getElementById('reg-video');
+  btn.disabled = true;
+
+  // ── Step 1: Register user in DB ────────────────────────
+  let regResult;
+  try {
+    msg.textContent = '📝 Creating account...';
+    regResult = await api('/register','POST',{...regData});
+  } catch(e) {
+    msg.textContent = '❌ Registration failed: '+e.message;
+    msg.className='scan-msg err';
+    btn.disabled=false;
+    return;
+  }
+
+  const uid = regResult.user_id;
+
+  // ── Step 2: Capture 4 real frames ─────────────────────
+  msg.textContent = '📷 Capturing face — hold still...';
+  let frames = [];
+  if(video.style.display !== 'none' && video.readyState >= 2){
+    frames = await Cam.captureFrames(video, 4, 350);
+  } else {
+    // Camera not started — try to start it now
+    msg.textContent = '📷 Opening camera...';
+    const ok = await Cam.start(video);
+    if(ok){
+      video.style.display='block'; em.style.display='none';
+      await new Promise(r=>setTimeout(r,800)); // let camera warm up
+      frames = await Cam.captureFrames(video, 4, 350);
+    }
+  }
+
+  if(frames.length === 0){
+    msg.textContent = '⚠️ Could not capture frames. Enrolling without face (demo mode).';
+    msg.className='scan-msg';
+    frames = []; // will still register, just no face model
+  }
+
+  // ── Step 3: Enroll face ────────────────────────────────
+  if(frames.length > 0){
+    msg.textContent = '🧠 Analysing face & training model...';
+    try {
+      const enrollRes = await api('/face/enroll','POST',{user_id: uid, frames});
+      if(enrollRes.success){
+        msg.textContent = `✅ Face enrolled! (${enrollRes.faces_used} samples used)`;
+      } else {
+        msg.textContent = '⚠️ Face enroll: '+enrollRes.error+' — account created anyway.';
+      }
+    } catch(e) {
+      msg.textContent = '⚠️ Face enroll failed — account still created.';
+    }
+  }
+
+  // ── Step 4: Done ───────────────────────────────────────
+  Cam.stop();
+  video.style.display='none'; em.style.display='';
+  sc.classList.add('ok'); em.textContent='😊';
+  msg.className='scan-msg ok';
+
+  USERS[uid]={
+    id: uid, name: regResult.name,
+    fname: regData.fname, lname: regData.lname,
+    email: regData.email, phone: regData.phone,
+    dob: regData.dob, addr: regData.addr,
+    accttype: regResult.acct_type,
+    nominee: regData.nominee, relation: regData.relation,
+    idtype: regData.idtype, idnum: regData.idnum,
+    acctno: regResult.acct_no,
+    balance:0, txHistory:[], cards:[],
+    fds:[], loans:[], rds:[],
+    totalCredited:0, totalDebited:0,
+    enrolled: now(), active:true
+  };
+
+  toast('Account opened for '+regResult.name+'! Welcome to FaceAuthBank 🎉','ok');
+
+  setTimeout(()=>{
+    sc.classList.remove('ok'); em.textContent='📷'; em.style.display='';
+    msg.textContent='Click "Start Camera" to begin';
+    msg.className='scan-msg'; btn.disabled=false;
+    document.getElementById('reg-cam-btn').style.display='';
+    document.getElementById('reg-cam-btn').disabled=false;
+    ['r-fname','r-lname','r-email','r-phone','r-dob','r-addr','r-nominee','r-idnum']
+      .forEach(i=>document.getElementById(i).value='');
+    showRegStep(1);
+    rebuildLoginSelect();
+    go('screen-login');
+  }, 2200);
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════════════
+async function rebuildLoginSelect(){
+  const sel = document.getElementById('login-user-sel');
+  sel.innerHTML = '<option value="">— Choose your account —</option>';
+  try {
+    const users = await api('/users');
+    users.forEach(u=>{
+      if(!u.active) return;
+      const o = document.createElement('option');
+      o.value=u.user_id;
+      o.textContent=`${u.name} — ${u.acct_no.slice(0,4)}XXXX${u.acct_no.slice(-4)} (${u.acct_type})`;
+      sel.appendChild(o);
+    });
+  } catch(e) { /* handled by api() */ }
+}
+
+function onLoginSelect(){
+  document.getElementById('login-btn').disabled = !document.getElementById('login-user-sel').value;
+  document.getElementById('login-scan-msg').textContent = 'Ready to scan — click Login';
+}
+
+async function doLogin(){
+  const userId = document.getElementById('login-user-sel').value;
+  if(!userId){toast('Select an account.','err');return;}
+
+  const sc    = document.getElementById('login-scanner');
+  const msg   = document.getElementById('login-scan-msg');
+  const em    = document.getElementById('login-face-em');
+  const video = document.getElementById('login-video');
+  const btn   = document.getElementById('login-btn');
+  btn.disabled = true;
+
+  // ── Step 1: Start camera ───────────────────────────────
+  msg.textContent = '📷 Opening camera...';
+  const camOk = await Cam.start(video);
+  if(!camOk){
+    msg.textContent = '❌ Camera access denied. Check browser permissions.';
+    msg.className = 'scan-msg err';
+    btn.disabled = false;
+    return;
+  }
+  video.style.display = 'block';
+  em.style.display    = 'none';
+  msg.textContent     = '😊 Hold still — scanning your face...';
+  msg.className       = 'scan-msg';
+
+  // ── Step 2: Check enrollment ───────────────────────────
+  await new Promise(r=>setTimeout(r, 900)); // camera warm-up
+  let enrolled = false;
+  try {
+    const status = await fetch(API+'/face/status/'+userId);
+    const statusData = await status.json();
+    enrolled = statusData.enrolled;
+  } catch(e){}
+
+  let verified = false;
+  let confidence = 999;
+  let matchQuality = '—';
+
+  if(!enrolled){
+    // No face model — allow login but warn (demo/first-time)
+    msg.textContent = '⚠️ No face enrolled. Logging in (demo mode)...';
+    verified = true;
+    confidence = 0;
+    matchQuality = 'N/A';
+    await new Promise(r=>setTimeout(r,1000));
+  } else {
+    // ── Step 3: Capture frame & verify ──────────────────
+    msg.textContent = '🧠 Comparing face...';
+    const frame = Cam.captureFrame(video);
+
+    try {
+      const res = await api('/face/verify','POST',{user_id: userId, frame, threshold: 75});
+      verified      = res.verified;
+      confidence    = res.confidence;
+      matchQuality  = res.match_quality || '—';
+      if(!verified && res.error) msg.textContent = '❌ ' + res.error;
+    } catch(e){
+      msg.textContent = '❌ Verification error: ' + e.message;
+      Cam.stop(); video.style.display='none'; em.style.display='';
+      btn.disabled=false;
+      return;
+    }
+  }
+
+  Cam.stop();
+  video.style.display='none'; em.style.display='';
+
+  if(verified){
+    sc.classList.add('ok'); em.textContent='✅'; msg.className='scan-msg ok';
+    msg.textContent = enrolled
+      ? `✅ Face matched! Confidence: ${confidence} · Quality: ${matchQuality}`
+      : '✅ Logged in (no face model on file)';
+    try {
+      const res = await api('/login','POST',{user_id:userId, face_ok:true});
+      CU      = userId;
+      CU_DATA = res.user;
+      USERS[userId] = {
+        id: res.user.user_id, name: res.user.name,
+        fname: res.user.fname, lname: res.user.lname,
+        email: res.user.email, phone: res.user.phone,
+        dob: res.user.dob, addr: res.user.address,
+        accttype: res.user.acct_type, acctno: res.user.acct_no,
+        balance: res.user.balance,
+        totalCredited: res.user.total_credited,
+        totalDebited:  res.user.total_debited,
+        txHistory: [], cards: res.user.cards||[],
+        fds: res.user.fds||[], loans: res.user.loans||[],
+        nominee: res.user.nominee, relation: res.user.relation,
+        idtype: res.user.id_type, idnum: res.user.id_number,
+        enrolled: res.user.created_at, active: true
+      };
+      const txs = await api('/transactions/'+userId);
+      USERS[userId].txHistory = txs;
+      AUTH_LOG = await api('/auth_log/'+userId);
+      authCount = 0;
+      setTimeout(()=>{
+        sc.classList.remove('ok'); em.textContent='😐';
+        msg.textContent='Select an account below'; msg.className='scan-msg';
+        btn.disabled=false;
+        loadDash(); go('screen-dash');
+      }, 900);
+    } catch(e){ btn.disabled=false; }
+  } else {
+    sc.classList.add('fail'); em.textContent='😤'; msg.className='scan-msg err';
+    if(!msg.textContent.startsWith('❌'))
+      msg.textContent = '❌ Face not recognised. Please try again.';
+    toast('Face verification failed. Try again.','err');
+    setTimeout(()=>{
+      sc.classList.remove('fail'); em.textContent='😐';
+      msg.textContent='Select an account below'; msg.className='scan-msg';
+      btn.disabled=false;
+    }, 2800);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════
+function loadDash(){
+  const u=USERS[CU];
+  document.getElementById('d-name').textContent=u.name;
+  document.getElementById('d-acctno').textContent=u.acctno;
+  document.getElementById('d-acctno2').textContent='Acc: '+u.acctno+' · '+u.email;
+  document.getElementById('d-avatar').textContent=(u.fname||u.name)[0]+((u.lname||u.name.split(' ')[1])||'')[0];
+  document.getElementById('d-accttype').textContent=u.accttype.charAt(0).toUpperCase()+u.accttype.slice(1)+' Account';
+  // populate transfer dropdown
+  const trSel = document.getElementById('tr-to');
+  trSel.innerHTML='<option value="">— Select recipient —</option>';
+  Object.values(USERS).forEach(v=>{
+    if(v.id===CU||!v.active) return;
+    const o=document.createElement('option');
+    o.value=v.id; o.textContent=v.name+' — '+v.acctno.slice(-4);
+    trSel.appendChild(o);
+  });
+  // also load other users for transfer dropdown from API
+  api('/users').then(users=>{
+    users.forEach(v=>{
+      if(v.user_id===CU) return;
+      if(trSel.querySelector(`option[value="${v.user_id}"]`)) return;
+      const o=document.createElement('option');
+      o.value=v.user_id; o.textContent=v.name+' — '+v.acct_no.slice(-4);
+      trSel.appendChild(o);
+    });
+  }).catch(()=>{});
+  renderDash();
+}
+
+function renderDash(){
+  const u=USERS[CU];
+  document.getElementById('d-balance').textContent=fmt(u.balance);
+  document.getElementById('d-credited').textContent=fmt(u.totalCredited);
+  document.getElementById('d-debited').textContent=fmt(u.totalDebited);
+  document.getElementById('d-txcount').textContent=u.txHistory.length;
+  document.getElementById('d-authcount').textContent=authCount;
+  document.getElementById('tx-count-lbl').textContent=u.txHistory.length+' records';
+  renderTxList();
+}
+
+function renderTxList(){
+  const list=document.getElementById('tx-list');
+  const txs=USERS[CU].txHistory;
+  if(!txs.length){list.innerHTML='<div class="tx-empty">No transactions yet.<br>Start with a deposit above.</div>';return;}
+  list.innerHTML=[...txs].slice(0,30).map((tx,i)=>`
+    <div class="tx-item" style="animation-delay:${i*.04}s">
+      <div class="tx-ico ${tx.cls}">${tx.icon||'💳'}</div>
+      <div class="tx-info">
+        <div class="tx-desc">${tx.description||tx.desc}</div>
+        <div class="tx-meta">${tx.timestamp||tx.date} ${tx.ref_no||tx.ref?'· Ref: '+(tx.ref_no||tx.ref):''}</div>
+      </div>
+      <div class="tx-amt ${tx.cls}">${tx.cls==='cr'?'+':'−'}${fmt(tx.amount)}</div>
+    </div>`).join('');
+}
+
+function renderProfile(){
+  const u=USERS[CU];
+  document.getElementById('profile-content').innerHTML=`
+    <div><span style="color:var(--sub)">Name</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--text)">${u.name}</strong></div>
+    <div><span style="color:var(--sub)">Account No.</span> &nbsp;&nbsp; <strong style="color:var(--cyan);font-family:var(--mono)">${u.acctno}</strong></div>
+    <div><span style="color:var(--sub)">Account Type</span> &nbsp; <strong style="color:var(--text)">${u.accttype}</strong></div>
+    <div><span style="color:var(--sub)">Email</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--text)">${u.email}</strong></div>
+    <div><span style="color:var(--sub)">Phone</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--text)">${u.phone}</strong></div>
+    <div><span style="color:var(--sub)">Nominee</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--text)">${u.nominee||''} (${u.relation||''})</strong></div>
+    <div><span style="color:var(--sub)">ID Proof</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--text)">${u.idtype||''}: ${u.idnum||''}</strong></div>
+    <div><span style="color:var(--sub)">Enrolled</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--text)">${u.enrolled}</strong></div>
+    <div><span style="color:var(--sub)">IFSC</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--text);font-family:var(--mono)">FAB0000001</strong></div>
+    <div><span style="color:var(--sub)">Branch</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--text)">Bengaluru Main Branch</strong></div>`;
+  const sl = document.getElementById('sec-log');
+  sl.innerHTML = AUTH_LOG.slice(0,20).map(l=>
+    `<div style="font-size:.76rem;font-family:var(--mono);padding:.35rem .6rem;border-radius:6px;background:var(--surface);color:${l.event_type&&(l.event_type.includes('OK')||l.event_type==='DEPOSIT'||l.event_type==='ENROLL')?'var(--green)':l.event_type&&l.event_type.includes('FAIL')?'var(--red)':'var(--cyan)'}">[${l.timestamp}] ${l.event_type} — ${l.message}</div>`
+  ).join('') || '<div style="font-size:.8rem;color:var(--sub);padding:.5rem">No logs yet.</div>';
+}
+
+function renderCards(){
+  const u=USERS[CU];
+  const cl=document.getElementById('cards-list');
+  if(!u.cards||!u.cards.length){cl.innerHTML='<div class="tx-empty">No cards yet. Request one below.</div>';return;}
+  cl.innerHTML=u.cards.map(c=>`
+    <div class="card-item">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:.78rem;color:var(--sub)">${c.type||c.card_type||'Debit Card'}</div>
+        <span class="badge badge-g">${(c.virtual||c.virtual===1)?'Virtual':'Physical'}</span>
+      </div>
+      <div class="card-num">${c.num}</div>
+      <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--sub);margin-top:.4rem">
+        <span>${u.name}</span><span>Valid till: ${c.expiry}</span><span>CVV: ${c.cvv}</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderLoans(){
+  const u=USERS[CU];
+  const fdl=document.getElementById('fd-list');
+  const lnl=document.getElementById('loan-list');
+  fdl.innerHTML=u.fds&&u.fds.length?u.fds.map(f=>`
+    <div class="loan-item">
+      <div class="loan-info">${fmt(f.amount)} FD
+        <div class="loan-lbl">Tenure: ${f.tenure} months · Rate: 7.5% · Matures: ${f.maturity}</div>
+        <div class="loan-bar-wrap"><div class="loan-bar-fill" style="width:5%"></div></div>
+      </div>
+    </div>`).join(''):'<div class="tx-empty">No FDs active.</div>';
+  lnl.innerHTML=u.loans&&u.loans.length?u.loans.map(l=>`
+    <div class="loan-item">
+      <div class="loan-info">${fmt(l.amount)} Loan
+        <div class="loan-lbl">EMI: ${fmt(l.emi)}/mo · ${l.tenure} months · 10.5% p.a.</div>
+        <div class="loan-bar-wrap"><div class="loan-bar-fill" style="width:5%;background:var(--red)"></div></div>
+      </div>
+    </div>`).join(''):'<div class="tx-empty">No active loans.</div>';
+}
+
+// ═══════════════════════════════════════════════════════════
+// TRANSACTION MODALS
+// ═══════════════════════════════════════════════════════════
+function openTxModal(type){
+  closeAllModals();
+  document.getElementById('modal-'+type).classList.add('open');
+  if(type==='fd') calcFD();
+  if(type==='loan') calcLoan();
+}
+function closeModal(type){ document.getElementById('modal-'+type).classList.remove('open'); }
+function closeAllModals(){ document.querySelectorAll('.modal-bg').forEach(m=>m.classList.remove('open')); }
+document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+
+function calcFD(){
+  const p=parseFloat(document.getElementById('fd-amt').value)||0;
+  const m=parseInt(document.getElementById('fd-tenure').value)||12;
+  const r=m<=12?7.0:m<=24?7.25:7.5;
+  const mat=p*(1+(r/100)*(m/12));
+  const int=mat-p;
+  document.getElementById('fd-calc').innerHTML=
+    `Principal: <strong style="color:var(--text)">${fmt(p)}</strong><br>`+
+    `Interest (${r}% p.a.): <strong style="color:var(--green)">${fmt(int)}</strong><br>`+
+    `Maturity Amount: <strong style="color:var(--cyan)">${fmt(mat)}</strong><br>`+
+    `Maturity Date: <strong style="color:var(--text)">${new Date(Date.now()+m*30*864e5).toLocaleDateString('en-IN')}</strong>`;
+}
+function calcLoan(){
+  const p=parseFloat(document.getElementById('ln-amt').value)||0;
+  const n=parseInt(document.getElementById('ln-tenure').value)||12;
+  const r=10.5/100/12;
+  const emi=r?p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1):p/n;
+  const total=emi*n;
+  document.getElementById('ln-calc').innerHTML=
+    `Loan Amount: <strong style="color:var(--text)">${fmt(p)}</strong><br>`+
+    `EMI: <strong style="color:var(--cyan)">${fmt(emi)}/month</strong><br>`+
+    `Total Repayment: <strong style="color:var(--amber)">${fmt(total)}</strong><br>`+
+    `Total Interest: <strong style="color:var(--red)">${fmt(total-p)}</strong>`;
+}
+
+function confirmTx(type){
+  let info='', valid=true, errMsg='';
+  const u=USERS[CU];
+  if(type==='deposit'){
+    const a=parseFloat(document.getElementById('dep-amt').value);
+    if(!a||a<=0){errMsg='Enter valid deposit amount.';valid=false;}
+    else info=`Deposit ${fmt(a)} — ${document.getElementById('dep-src').value}`;
+  } else if(type==='withdraw'){
+    const a=parseFloat(document.getElementById('wd-amt').value);
+    if(!a||a<=0){errMsg='Enter valid amount.';valid=false;}
+    else if(a>u.balance){errMsg='Insufficient funds!';valid=false;}
+    else if(a>50000){errMsg='Max ₹50,000 per withdrawal.';valid=false;}
+    else info=`Withdraw ${fmt(a)} — ${document.getElementById('wd-mode').value}`;
+  } else if(type==='transfer'){
+    const a=parseFloat(document.getElementById('tr-amt').value);
+    const to=document.getElementById('tr-to').value;
+    if(!to){errMsg='Select a recipient.';valid=false;}
+    else if(!a||a<=0){errMsg='Enter valid amount.';valid=false;}
+    else if(a>u.balance){errMsg='Insufficient funds!';valid=false;}
+    else info=`Transfer ${fmt(a)} → recipient`;
+  } else if(type==='cheque'){
+    const a=parseFloat(document.getElementById('chq-amt').value);
+    if(!document.getElementById('chq-to').value){errMsg='Enter payee name.';valid=false;}
+    else if(!a||a<=0){errMsg='Enter valid amount.';valid=false;}
+    else if(a>u.balance){errMsg='Insufficient funds!';valid=false;}
+    else info=`Issue ${document.getElementById('chq-type').value}: ${fmt(a)} to ${document.getElementById('chq-to').value}`;
+  } else if(type==='fd'){
+    const a=parseFloat(document.getElementById('fd-amt').value);
+    if(!a||a<1000){errMsg='Minimum FD amount is ₹1,000.';valid=false;}
+    else if(a>u.balance){errMsg='Insufficient balance.';valid=false;}
+    else info=`Open FD: ${fmt(a)} for ${document.getElementById('fd-tenure').value} months`;
+  } else if(type==='rd'){
+    const a=parseFloat(document.getElementById('rd-amt').value);
+    if(!a||a<500){errMsg='Minimum RD is ₹500/month.';valid=false;}
+    else info=`Open RD: ${fmt(a)}/month for ${document.getElementById('rd-tenure').value} months`;
+  } else if(type==='loan'){
+    const a=parseFloat(document.getElementById('ln-amt').value);
+    if(!a||a<=0||a>500000){errMsg='Loan amount must be ₹1–₹5,00,000.';valid=false;}
+    else info=`Personal Loan: ${fmt(a)} for ${document.getElementById('ln-tenure').value} months`;
+  } else if(type==='neft'){
+    const a=parseFloat(document.getElementById('neft-amt').value);
+    const nm=document.getElementById('neft-name').value;
+    const acc=document.getElementById('neft-acc').value;
+    const ifsc=document.getElementById('neft-ifsc').value;
+    if(!nm||!acc||!ifsc){errMsg='Fill all NEFT details.';valid=false;}
+    else if(!a||a<=0){errMsg='Enter valid amount.';valid=false;}
+    else if(a>u.balance){errMsg='Insufficient funds.';valid=false;}
+    else info=`NEFT to ${nm} (${acc}): ${fmt(a)}`;
+  } else if(type==='newcard'){
+    info=`Request: ${document.getElementById('nc-type').value}`;
+  }
+  if(!valid){toast(errMsg,'err');return;}
+  pendingTx={type,info};
+  closeAllModals();
+  openFaceModal(info);
+}
+
+function openFaceModal(info){
+  document.getElementById('fc-action-info').textContent=info;
+  document.getElementById('face-modal-title').textContent='Confirm with Face';
+  document.getElementById('face-modal-sub').textContent='Look at the camera to authorize this transaction';
+  document.getElementById('fc-msg').textContent='Starting camera...';
+  document.getElementById('fc-msg').className='scan-msg';
+  document.getElementById('fc-face-em').textContent='📷';
+  document.getElementById('fc-scanner').className='fc-scanner';
+  document.getElementById('modal-face').classList.add('open');
+  setTimeout(runFaceConfirm, 400);
+}
+
+function closeFaceModal(){
+  Cam.stop();
+  const video = document.getElementById('face-video');
+  video.style.display='none';
+  document.getElementById('fc-face-em').style.display='';
+  document.getElementById('modal-face').classList.remove('open');
+  pendingTx=null;
+}
+
+async function runFaceConfirm(){
+  const sc    = document.getElementById('fc-scanner');
+  const msg   = document.getElementById('fc-msg');
+  const em    = document.getElementById('fc-face-em');
+  const video = document.getElementById('face-video');
+
+  // ── Start camera ───────────────────────────────────────
+  msg.textContent = '📷 Opening camera...';
+  const camOk = await Cam.start(video);
+  if(!camOk){
+    sc.classList.add('fail'); em.textContent='❌';
+    msg.textContent = '❌ Camera access denied.';
+    msg.className='scan-msg err';
+    toast('Camera access denied — transaction cancelled.','err');
+    setTimeout(closeFaceModal, 2500);
+    return;
+  }
+  video.style.display='block'; em.style.display='none';
+  msg.textContent = '😊 Hold still — verifying identity...';
+
+  await new Promise(r=>setTimeout(r, 900)); // camera warm-up
+
+  // ── Check if enrolled ──────────────────────────────────
+  let enrolled = false;
+  try {
+    const st = await fetch(API+'/face/status/'+CU);
+    enrolled = (await st.json()).enrolled;
+  } catch(e){}
+
+  let verified = false;
+  let confidence = 999;
+
+  if(!enrolled){
+    // No face model — auto-pass with warning (first login scenario)
+    verified = true;
+    confidence = 0;
+    msg.textContent = '⚠️ No face model — auto-approved (enroll face next time)';
+  } else {
+    msg.textContent = '🧠 Comparing face...';
+    const frame = Cam.captureFrame(video);
+    try {
+      const res = await api('/face/verify','POST',{user_id:CU, frame, threshold:75});
+      verified   = res.verified;
+      confidence = res.confidence;
+      if(!verified) msg.textContent = '❌ ' + (res.error || 'Face not recognised');
+    } catch(e){
+      msg.textContent = '❌ Verification error: '+e.message;
+      Cam.stop(); video.style.display='none'; em.style.display='';
+      sc.classList.add('fail'); em.textContent='❌';
+      setTimeout(closeFaceModal, 2500);
+      return;
+    }
+  }
+
+  Cam.stop(); video.style.display='none'; em.style.display='';
+  authCount++;
+  document.getElementById('d-authcount').textContent=authCount;
+
+  if(verified){
+    sc.classList.add('ok'); em.textContent='✅'; msg.className='scan-msg ok';
+    if(enrolled) msg.textContent=`✅ Verified! (confidence: ${confidence})`;
+    await api('/log_auth','POST',{user_id:CU, event_type:'TX_AUTH_OK',
+      message:'TX Auth OK: '+USERS[CU].name+' — '+pendingTx.info});
+    setTimeout(()=>{ execTx(); closeFaceModal(); }, 600);
+  } else {
+    sc.classList.add('fail'); em.textContent='❌'; msg.className='scan-msg err';
+    await api('/log_auth','POST',{user_id:CU, event_type:'TX_AUTH_FAIL',
+      message:'TX Auth FAILED: '+USERS[CU].name+' confidence='+confidence});
+    toast('Face not recognised — transaction cancelled.','err');
+    setTimeout(closeFaceModal, 2500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXECUTE TX (calls API, updates local state)
+// ═══════════════════════════════════════════════════════════
+async function execTx(){
+  if(!pendingTx) return;
+  const type=pendingTx.type;
+
+  try {
+    let result;
+    if(type==='deposit'){
+      const a=parseFloat(document.getElementById('dep-amt').value);
+      const src=document.getElementById('dep-src').value;
+      result = await api('/deposit','POST',{user_id:CU,amount:a,source:src,face_ok:true});
+      USERS[CU].balance=result.new_balance;
+      USERS[CU].totalCredited+=a;
+      USERS[CU].txHistory.unshift({cls:'cr',icon:'💰',description:'Cash Deposit — '+src,amount:a,ref_no:result.ref,timestamp:now(),balance_after:result.new_balance});
+      toast('Deposited '+fmt(a)+' successfully!','ok');
+      document.getElementById('dep-amt').value='';
+
+    } else if(type==='withdraw'){
+      const a=parseFloat(document.getElementById('wd-amt').value);
+      const mode=document.getElementById('wd-mode').value;
+      result = await api('/withdraw','POST',{user_id:CU,amount:a,mode:mode,face_ok:true});
+      USERS[CU].balance=result.new_balance;
+      USERS[CU].totalDebited+=a;
+      USERS[CU].txHistory.unshift({cls:'dr',icon:'💸',description:'Cash Withdrawal — '+mode,amount:a,ref_no:result.ref,timestamp:now(),balance_after:result.new_balance});
+      toast('Withdrew '+fmt(a)+'!','ok');
+      document.getElementById('wd-amt').value='';
+
+    } else if(type==='transfer'){
+      const a=parseFloat(document.getElementById('tr-amt').value);
+      const to=document.getElementById('tr-to').value;
+      const rem=document.getElementById('tr-rem').value||'Fund Transfer';
+      result = await api('/transfer','POST',{user_id:CU,to_user_id:to,amount:a,remark:rem,face_ok:true});
+      USERS[CU].balance=result.new_balance;
+      USERS[CU].totalDebited+=a;
+      USERS[CU].txHistory.unshift({cls:'tr',icon:'🔄',description:'Transfer → '+result.recipient_name+' · '+rem,amount:a,ref_no:result.ref,timestamp:now(),balance_after:result.new_balance});
+      toast('Transferred '+fmt(a)+' to '+result.recipient_name+'!','ok');
+      document.getElementById('tr-amt').value=''; document.getElementById('tr-rem').value='';
+
+    } else if(type==='cheque'){
+      const a=parseFloat(document.getElementById('chq-amt').value);
+      const payee=document.getElementById('chq-to').value;
+      const ct=document.getElementById('chq-type').value;
+      result = await api('/cheque','POST',{user_id:CU,amount:a,payee:payee,chq_type:ct,face_ok:true});
+      USERS[CU].balance=result.new_balance;
+      USERS[CU].totalDebited+=a;
+      USERS[CU].txHistory.unshift({cls:'ch',icon:'📝',description:ct+' to '+payee,amount:a,ref_no:result.ref,timestamp:now(),balance_after:result.new_balance});
+      toast('Cheque issued for '+fmt(a)+'!','warn');
+      document.getElementById('chq-amt').value=''; document.getElementById('chq-to').value='';
+
+    } else if(type==='fd'){
+      const a=parseFloat(document.getElementById('fd-amt').value);
+      const m=parseInt(document.getElementById('fd-tenure').value);
+      result = await api('/fd','POST',{user_id:CU,amount:a,tenure:m,face_ok:true});
+      USERS[CU].balance=result.new_balance;
+      USERS[CU].fds.push({amount:a,tenure:m,maturity:result.maturity,ref_no:result.ref});
+      USERS[CU].txHistory.unshift({cls:'dr',icon:'🏛️',description:'Fixed Deposit Created — '+m+' months',amount:a,ref_no:result.ref,timestamp:now(),balance_after:result.new_balance});
+      toast('FD of '+fmt(a)+' created! Matures: '+result.maturity,'ok');
+      document.getElementById('fd-amt').value='';
+
+    } else if(type==='rd'){
+      const a=parseFloat(document.getElementById('rd-amt').value);
+      const m=parseInt(document.getElementById('rd-tenure').value);
+      result = await api('/rd','POST',{user_id:CU,amount:a,tenure:m,face_ok:true});
+      USERS[CU].txHistory.unshift({cls:'dr',icon:'📅',description:'Recurring Deposit — ₹'+a+'/month × '+m+'mo',amount:a,ref_no:result.ref,timestamp:now()});
+      toast('RD of '+fmt(a)+'/month opened for '+m+' months!','ok');
+      document.getElementById('rd-amt').value='';
+
+    } else if(type==='loan'){
+      const a=parseFloat(document.getElementById('ln-amt').value);
+      const n=parseInt(document.getElementById('ln-tenure').value);
+      result = await api('/loan','POST',{user_id:CU,amount:a,tenure:n,face_ok:true});
+      USERS[CU].balance=result.new_balance;
+      USERS[CU].totalCredited+=a;
+      USERS[CU].loans.push({amount:a,tenure:n,emi:result.emi,ref_no:result.ref});
+      USERS[CU].txHistory.unshift({cls:'cr',icon:'💼',description:'Personal Loan Disbursed — '+n+' months @ 10.5% p.a.',amount:a,ref_no:result.ref,timestamp:now(),balance_after:result.new_balance});
+      toast('Loan of '+fmt(a)+' approved & disbursed!','ok');
+      document.getElementById('ln-amt').value='';
+
+    } else if(type==='neft'){
+      const a=parseFloat(document.getElementById('neft-amt').value);
+      const name=document.getElementById('neft-name').value;
+      const acc=document.getElementById('neft-acc').value;
+      const ifsc=document.getElementById('neft-ifsc').value;
+      result = await api('/neft','POST',{user_id:CU,amount:a,name:name,acc:acc,ifsc:ifsc,face_ok:true});
+      USERS[CU].balance=result.new_balance;
+      USERS[CU].totalDebited+=a;
+      USERS[CU].txHistory.unshift({cls:'tr',icon:'📱',description:'NEFT → '+name+' ('+acc+')',amount:a,ref_no:result.ref,timestamp:now(),balance_after:result.new_balance});
+      toast('NEFT sent! '+fmt(a)+' to '+name,'ok');
+      ['neft-name','neft-acc','neft-ifsc','neft-amt'].forEach(i=>document.getElementById(i).value='');
+
+    } else if(type==='newcard'){
+      const ct=document.getElementById('nc-type').value;
+      result = await api('/card','POST',{user_id:CU,card_type:ct,face_ok:true});
+      USERS[CU].cards.push(result.card);
+      toast('Card issued: '+result.card.num,'ok');
+    }
+
+    updateChartBar(type);
+    renderDash();
+    updateAdminDash();
+    pendingTx=null;
+
+  } catch(e) {
+    toast('Transaction failed: '+e.message,'err');
+    pendingTx=null;
+  }
+}
+
+function updateChartBar(type){
+  chartData.push(Math.random()*.8+.2);
+  if(chartData.length>7) chartData.shift();
+  const bars=document.querySelectorAll('#mini-chart .mc-bar');
+  bars.forEach((b,i)=>{b.style.height=(chartData[i]||.1)*100+'%';});
+}
+
+// ═══════════════════════════════════════════════════════════
+// MINI STATEMENT
+// ═══════════════════════════════════════════════════════════
+function miniStatement(){
+  const u=USERS[CU];
+  document.getElementById('stmt-sub').textContent=u.name+' · '+u.acctno;
+  const lines=[
+    'FACEAUTH BANK — ACCOUNT STATEMENT',
+    '══════════════════════════════════',
+    'Name       : '+u.name,
+    'Account No.: '+u.acctno,
+    'Type       : '+u.accttype.toUpperCase(),
+    'IFSC       : FAB0000001',
+    'Branch     : Bengaluru Main',
+    '──────────────────────────────────',
+    'Current Balance : '+fmt(u.balance),
+    'Total Credited  : '+fmt(u.totalCredited),
+    'Total Debited   : '+fmt(u.totalDebited),
+    'Transactions    : '+u.txHistory.length,
+    '══════════════════════════════════',
+    'LAST 10 TRANSACTIONS:',''
+  ];
+  [...u.txHistory].slice(0,10).forEach(t=>{
+    lines.push(`${t.timestamp||t.date}`);
+    lines.push(`  ${t.icon||'💳'} ${t.description||t.desc}`);
+    lines.push(`  ${t.cls==='cr'?'CR':'DR'} ${fmt(t.amount)}  Bal: ${fmt(t.balance_after||t.bal)}`);
+    lines.push(`  Ref: ${t.ref_no||t.ref}`);
+    lines.push('');
+  });
+  if(!u.txHistory.length) lines.push('  No transactions on record.');
+  document.getElementById('stmt-body').textContent=lines.join('\n');
+  openTxModal('statement');
+}
+function printStatement(){ window.print(); }
+
+// ═══════════════════════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════════════════════
+async function adminLogin(){
+  const pw = document.getElementById('admin-pw-input') ?
+    document.getElementById('admin-pw-input').value : ADMIN_PW;
+  try {
+    await api('/admin/login','POST',{password:ADMIN_PW});
+    await updateAdminDash();
+    go('screen-admin');
+  } catch(e) {
+    toast('Admin login failed.','err');
+  }
+}
+
+async function updateAdminDash(){
+  try {
+    const [summary, users, txns, logs] = await Promise.all([
+      api('/admin/summary', 'GET', null, {'X-Admin-Password': ADMIN_PW}),
+      api('/admin/users',   'GET', null, {'X-Admin-Password': ADMIN_PW}),
+      api('/admin/transactions','GET',null,{'X-Admin-Password': ADMIN_PW}),
+      api('/admin/auth_logs','GET',null,{'X-Admin-Password': ADMIN_PW})
+    ]);
+
+    document.getElementById('adm-users').textContent=summary.users;
+    document.getElementById('adm-deposits').textContent=fmt(summary.total_deposits);
+    document.getElementById('adm-withdrawals').textContent=fmt(summary.total_withdrawals);
+
+    // Users table
+    document.getElementById('admin-users-body').innerHTML=users.map(u=>`
+      <tr>
+        <td style="font-family:var(--mono);font-size:.8rem">${u.acct_no}</td>
+        <td><strong>${u.name}</strong><br><span style="font-size:.75rem;color:var(--sub)">${u.email||''}</span></td>
+        <td><span class="badge badge-b">${u.acct_type}</span></td>
+        <td style="font-family:var(--mono);color:var(--cyan)">${fmt(u.balance)}</td>
+        <td>${u.tx_count||0}</td>
+        <td><span class="badge ${u.active?'badge-g':'badge-r'}">${u.active?'Active':'Inactive'}</span></td>
+      </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--sub);padding:2rem">No users registered.</td></tr>';
+
+    // Transactions
+    document.getElementById('admin-txns-body').innerHTML=txns.map(t=>`
+      <tr>
+        <td style="font-size:.75rem;font-family:var(--mono)">${t.timestamp}</td>
+        <td><strong>${t.name}</strong></td>
+        <td>${t.icon||'💳'} ${t.tx_type}</td>
+        <td style="font-family:var(--mono);color:${t.cls==='cr'?'var(--green)':t.cls==='dr'?'var(--red)':'var(--purple)'}">${t.cls==='cr'?'+':'−'}${fmt(t.amount)}</td>
+        <td style="font-size:.8rem">${t.description}</td>
+        <td style="font-family:var(--mono)">${fmt(t.balance_after)}</td>
+      </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--sub);padding:2rem">No transactions yet.</td></tr>';
+
+    // Auth logs
+    document.getElementById('admin-log-list').innerHTML=logs.map(l=>
+      `<div style="font-size:.76rem;font-family:var(--mono);padding:.35rem .7rem;border-radius:6px;background:var(--surface);color:${l.event_type&&(l.event_type.includes('OK')||l.event_type==='DEPOSIT'||l.event_type==='ENROLL')?'var(--green)':l.event_type&&l.event_type.includes('FAIL')?'var(--red)':'var(--cyan)'}">[${l.timestamp}] ${l.event_type} — ${l.name||l.user_id}: ${l.message}</div>`
+    ).join('') || '<div style="font-size:.8rem;color:var(--sub);padding:1rem">No logs yet.</div>';
+
+  } catch(e) { /* handled */ }
+}
+
+// ═══════════════════════════════════════════════════════════
+// VIRTUAL CARD (quick-generate from dashboard)
+// ═══════════════════════════════════════════════════════════
+async function generateVirtualCard(){
+  if(!CU){toast('Please login first.','err');return;}
+  try {
+    const result = await api('/card','POST',{user_id:CU,card_type:'Virtual Debit Card',face_ok:true});
+    USERS[CU].cards.push(result.card);
+    toast('Virtual card generated: '+result.card.num,'ok');
+    switchTab('cards');
+    renderCards();
+  } catch(e) { /* handled */ }
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOAST & LOGOUT
+// ═══════════════════════════════════════════════════════════
+function toast(msg,type='info'){
+  const el=document.createElement('div');
+  el.className='toast '+type;
+  const icons={ok:'✓',err:'✗',info:'ℹ',warn:'⚠'};
+  el.textContent=(icons[type]||'•')+' '+msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.style.opacity='0',3200);
+  setTimeout(()=>el.remove(),3600);
+}
+
+async function logout(){
+  if(CU) await api('/log_auth','POST',{user_id:CU,event_type:'LOGOUT',message:'Logout: '+(USERS[CU]?.name||CU)});
+  CU=null; CU_DATA=null; pendingTx=null; authCount=0;
+  await rebuildLoginSelect();
+  go('screen-home');
+  toast('Logged out securely.','info');
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+(async()=>{
+  await refreshHeroCount();
+  await rebuildLoginSelect();
+})();
+</script>
+</body>
+</html>

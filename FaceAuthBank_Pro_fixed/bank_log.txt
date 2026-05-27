@@ -1,0 +1,64 @@
+2026-05-24 08:42:21,939 - Exception on /api/users [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/claude/FaceAuthBank_Pro_fixed/app.py", line 174, in list_users
+    rows = conn.execute(
+           ^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: fname
+2026-05-24 08:42:27,932 - Exception on /api/users [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/claude/FaceAuthBank_Pro_fixed/app.py", line 174, in list_users
+    rows = conn.execute(
+           ^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: fname
+2026-05-24 08:42:27,935 - Exception on /api/register [POST]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/claude/FaceAuthBank_Pro_fixed/app.py", line 223, in register
+    conn.execute("""
+sqlite3.OperationalError: table users has no column named fname
+2026-05-24 08:43:02,556 - [ENROLL] Account opened: Arjun Sharma | 5203276290082
+2026-05-24 08:43:02,556 - Registered: Arjun Sharma | U7A1F7987 | 5203276290082
+2026-05-24 08:43:02,560 - [LOGIN_OK] Login successful: Arjun Sharma
+2026-05-24 08:43:02,567 - [DEPOSIT] Deposited ₹10000.0 | Bal: ₹10000.0 | Ref: REF2410F7A6
+2026-05-24 08:43:02,574 - [WITHDRAWAL] Withdrew ₹2000.0 | Bal: ₹8000.0 | Ref: REF08D7EE17
+2026-05-24 13:53:23,485 - [ENROLL] Account opened: Riya Patel | 5201473385958
+2026-05-24 13:53:23,486 - Registered: Riya Patel | UDCE610E3 | 5201473385958
+2026-05-24 13:53:23,574 - [FaceEngine] Enrolled UDCE610E3 with 3 face samples
+2026-05-24 13:53:23,579 - [FACE_ENROLL] Face enrolled: Riya Patel (3 samples)
+2026-05-24 13:53:23,598 - [FaceEngine] Verify UDCE610E3: confidence=0.0 threshold=100.0 → ✅
+2026-05-24 13:53:23,602 - [FACE_VERIFY_OK] Face verified: Riya Patel | confidence=0.0 | quality=100%

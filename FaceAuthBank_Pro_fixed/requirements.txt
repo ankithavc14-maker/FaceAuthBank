@@ -1,0 +1,8 @@
+# Face recognition (for Python CLI scripts - register_user.py, authenticate_user.py)
+opencv-python>=4.5.0
+face-recognition>=1.3.0
+numpy>=1.21.0
+dlib>=19.22.0
+
+# Web API (app.py)
+flask>=2.0.0
