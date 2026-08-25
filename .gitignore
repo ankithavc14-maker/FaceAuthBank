@@ -1,0 +1,5 @@
+.env
+__pycache__/
+*.pyc
+face_data/
+bank_log.txt
