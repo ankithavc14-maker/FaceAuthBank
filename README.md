@@ -1,4 +1,3 @@
-````markdown
 # FaceAuthBank — Biometric Banking System
 
 A production-style banking application secured with **face authentication, multi-frame liveness verification, biometric transaction confirmation, PostgreSQL, audit logging, and machine-learning insights**.
