@@ -1056,4 +1056,4 @@ if __name__ == "__main__":
     print("  Liveness  : ENABLED (multi-frame variance)")
     print("  Lockout   : 3 attempts → 5-min ban")
     print("═" * 60 + "\n")
-    app.run(debug=False, port=5000)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
