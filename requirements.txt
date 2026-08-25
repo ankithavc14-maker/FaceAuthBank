@@ -1,0 +1,31 @@
+# ── Core Computer Vision & Face Recognition ──────────────────────────────────
+opencv-python>=4.8.0          # Image capture, preprocessing
+opencv-contrib-python>=4.8.0  # Extended OpenCV modules
+face-recognition>=1.3.0       # dlib ResNet-34 CNN: 128-D facial embeddings
+dlib>=19.24.0                  # Deep learning face detection & landmark model
+numpy>=1.24.0                  # Numerical ops: embeddings, Euclidean distance
+
+# ── Web API Backend ───────────────────────────────────────────────────────────
+flask>=3.0.0                   # RESTful API server
+flask-cors>=4.0.0              # Cross-origin resource sharing
+
+# ── AI / ML (NEW) ─────────────────────────────────────────────────────────────
+scikit-learn>=1.3.0            # IsolationForest · KMeans · LinearRegression · StandardScaler
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+Pillow>=10.0.0                 # Image I/O
+
+# ── Installation ──────────────────────────────────────────────────────────────
+# Ubuntu/Debian: sudo apt install cmake build-essential libopenblas-dev liblapack-dev
+# macOS:         brew install cmake
+# Then:          pip install -r requirements.txt
+
+# PostgreSQL database
+psycopg[binary]>=3.2.0
+
+# Environment configuration
+python-dotenv>=1.0.1
+
+# Compatibility for face_recognition_models on Python 3.11+
+setuptools<81
+face-recognition-models @ git+https://github.com/ageitgey/face_recognition_models.git

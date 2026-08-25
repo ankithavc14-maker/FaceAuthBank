@@ -1,0 +1,55 @@
+2026-08-25 12:45:37,160 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-08-25 12:45:37,160 - [33mPress CTRL+C to quit[0m
+2026-08-25 12:47:10,037 - 127.0.0.1 - - [25/Aug/2026 12:47:10] "GET / HTTP/1.1" 200 -
+2026-08-25 12:47:10,462 - 127.0.0.1 - - [25/Aug/2026 12:47:10] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:47:10,841 - 127.0.0.1 - - [25/Aug/2026 12:47:10] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:47:11,114 - 127.0.0.1 - - [25/Aug/2026 12:47:11] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:47:15,104 - 127.0.0.1 - - [25/Aug/2026 12:47:15] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:47:18,418 - 127.0.0.1 - - [25/Aug/2026 12:47:18] "GET /api/face/status/UBC0A0AF7 HTTP/1.1" 200 -
+2026-08-25 12:47:26,447 - [FaceEngine] FACE_ENROLL_SUCCESS UBC0A0AF7: 5 frames
+2026-08-25 12:47:26,472 - [FACE_ENROLL] Face enrolled: ammu j (5 samples)
+2026-08-25 12:47:26,473 - 127.0.0.1 - - [25/Aug/2026 12:47:26] "POST /api/face/enroll HTTP/1.1" 200 -
+2026-08-25 12:47:26,791 - 127.0.0.1 - - [25/Aug/2026 12:47:26] "GET /api/face/status/UBC0A0AF7 HTTP/1.1" 200 -
+2026-08-25 12:47:30,290 - 127.0.0.1 - - [25/Aug/2026 12:47:30] "GET /api/face/status/UBC0A0AF7 HTTP/1.1" 200 -
+2026-08-25 12:47:34,098 - [FACE_VERIFY_OK] Face verified: ammu j | dist=0.2445 | liveness=PASS
+2026-08-25 12:47:34,099 - 127.0.0.1 - - [25/Aug/2026 12:47:34] "POST /api/face/verify HTTP/1.1" 200 -
+2026-08-25 12:47:34,183 - [LOGIN_OK] Login OK: ammu j | dist=0.0 | liveness=PASS
+2026-08-25 12:47:34,191 - 127.0.0.1 - - [25/Aug/2026 12:47:34] "POST /api/login HTTP/1.1" 200 -
+2026-08-25 12:47:34,570 - 127.0.0.1 - - [25/Aug/2026 12:47:34] "GET /api/transactions/UBC0A0AF7 HTTP/1.1" 200 -
+2026-08-25 12:47:34,815 - 127.0.0.1 - - [25/Aug/2026 12:47:34] "GET /api/auth_log/UBC0A0AF7 HTTP/1.1" 200 -
+2026-08-25 12:47:35,813 - 127.0.0.1 - - [25/Aug/2026 12:47:35] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:47:36,180 - 127.0.0.1 - - [25/Aug/2026 12:47:36] "GET /api/profile/photo/UBC0A0AF7?v=1787642255750 HTTP/1.1" 200 -
+2026-08-25 12:47:42,611 - 127.0.0.1 - - [25/Aug/2026 12:47:42] "POST /api/ml/fraud-check HTTP/1.1" 200 -
+2026-08-25 12:47:46,496 - 127.0.0.1 - - [25/Aug/2026 12:47:46] "GET /api/ml/report/UBC0A0AF7 HTTP/1.1" 200 -
+2026-08-25 12:48:16,779 - [LOGOUT] Logout: ammu j
+2026-08-25 12:48:16,779 - 127.0.0.1 - - [25/Aug/2026 12:48:16] "POST /api/log_auth HTTP/1.1" 200 -
+2026-08-25 12:48:17,047 - 127.0.0.1 - - [25/Aug/2026 12:48:17] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:48:17,097 - 127.0.0.1 - - [25/Aug/2026 12:48:17] "GET /api/face/status/UBC0A0AF7 HTTP/1.1" 200 -
+2026-08-25 12:48:17,420 - 127.0.0.1 - - [25/Aug/2026 12:48:17] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:48:28,189 - 127.0.0.1 - - [25/Aug/2026 12:48:28] "POST /api/admin/login HTTP/1.1" 200 -
+2026-08-25 12:48:28,601 - 127.0.0.1 - - [25/Aug/2026 12:48:28] "GET /api/admin/users HTTP/1.1" 200 -
+2026-08-25 12:48:28,611 - 127.0.0.1 - - [25/Aug/2026 12:48:28] "GET /api/admin/auth_logs HTTP/1.1" 200 -
+2026-08-25 12:48:28,684 - 127.0.0.1 - - [25/Aug/2026 12:48:28] "GET /api/admin/summary HTTP/1.1" 200 -
+2026-08-25 12:48:28,710 - 127.0.0.1 - - [25/Aug/2026 12:48:28] "GET /api/admin/transactions HTTP/1.1" 200 -
+2026-08-25 12:48:29,143 - 127.0.0.1 - - [25/Aug/2026 12:48:29] "GET /api/admin/summary HTTP/1.1" 200 -
+2026-08-25 12:48:29,161 - 127.0.0.1 - - [25/Aug/2026 12:48:29] "GET /api/admin/transactions HTTP/1.1" 200 -
+2026-08-25 12:48:29,247 - 127.0.0.1 - - [25/Aug/2026 12:48:29] "GET /api/admin/users HTTP/1.1" 200 -
+2026-08-25 12:48:29,270 - 127.0.0.1 - - [25/Aug/2026 12:48:29] "GET /api/admin/auth_logs HTTP/1.1" 200 -
+2026-08-25 12:48:29,317 - 127.0.0.1 - - [25/Aug/2026 12:48:29] "GET /api/ml/admin/fraud-summary HTTP/1.1" 200 -
+2026-08-25 12:48:29,746 - 127.0.0.1 - - [25/Aug/2026 12:48:29] "GET /api/ml/admin/fraud-summary HTTP/1.1" 200 -
+2026-08-25 12:48:43,708 - 127.0.0.1 - - [25/Aug/2026 12:48:43] "GET /api/ml/admin/fraud-summary HTTP/1.1" 200 -
+2026-08-25 12:48:52,193 - 127.0.0.1 - - [25/Aug/2026 12:48:52] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:48:55,925 - 127.0.0.1 - - [25/Aug/2026 12:48:55] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:48:56,128 - 127.0.0.1 - - [25/Aug/2026 12:48:56] "GET /api/face/status/UBC0A0AF7 HTTP/1.1" 200 -
+2026-08-25 12:48:57,949 - 127.0.0.1 - - [25/Aug/2026 12:48:57] "GET /api/face/status/UFD763944 HTTP/1.1" 200 -
+2026-08-25 12:49:04,911 - [FaceEngine] DUPLICATE_FACE UFD763944 matches UBC0A0AF7
+2026-08-25 12:49:04,915 - [FACE_ENROLL_FAIL] Face enrollment failed: Ankitha V Chandan — This face is already registered with another account.
+2026-08-25 12:49:04,916 - 127.0.0.1 - - [25/Aug/2026 12:49:04] "POST /api/face/enroll HTTP/1.1" 200 -
+2026-08-25 12:49:58,150 - 127.0.0.1 - - [25/Aug/2026 12:49:58] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:50:28,661 - 127.0.0.1 - - [25/Aug/2026 12:50:28] "POST /api/face/check-duplicate HTTP/1.1" 200 -
+2026-08-25 12:50:36,554 - 127.0.0.1 - - [25/Aug/2026 12:50:36] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:51:28,377 - 127.0.0.1 - - [25/Aug/2026 12:51:28] "GET / HTTP/1.1" 200 -
+2026-08-25 12:51:28,713 - 127.0.0.1 - - [25/Aug/2026 12:51:28] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:51:28,819 - 127.0.0.1 - - [25/Aug/2026 12:51:28] "GET /api/users HTTP/1.1" 200 -
+2026-08-25 12:51:29,087 - 127.0.0.1 - - [25/Aug/2026 12:51:29] "GET /api/users HTTP/1.1" 200 -

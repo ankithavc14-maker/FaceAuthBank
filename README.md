@@ -1,106 +1,41 @@
-# FaceAuthBank — Biometric Banking System
+# FaceAuthBanking
 
-A real banking system secured by face recognition.  
-Every transaction requires a live face scan for authentication.
+PostgreSQL-backed biometric banking prototype with Flask, OpenCV, face_recognition/dlib and ML analytics.
 
----
+## Important fixes in this version
 
-## Project Structure
-
-```
-FaceAuthBank_Pro/
-├── index.html            ← Full-featured web frontend (open in browser)
-├── register_user.py      ← CLI: Register new user + enroll face
-├── authenticate_user.py  ← CLI: Login + all banking transactions
-├── admin_dashboard.py    ← CLI: Admin — all users & transactions
-├── face_data/            ← Stores face encodings (.npy per user)
-├── face_auth_bank.db     ← SQLite database (users, transactions, logs)
-├── bank_log.txt          ← Audit log file
-└── requirements.txt      ← Python dependencies
-```
-
----
+- PostgreSQL via `psycopg`
+- `.env` configuration
+- Registration captures and checks the face **before creating an account**
+- Duplicate face detection across existing embeddings
+- Failed face enrollment does not leave an orphan account
+- Face enrollment uses original RGB frames first, with enhanced/upsampled fallbacks
+- Liveness check and brute-force lockout
+- Login requires a real face enrollment; demo-mode login is removed
+- Successful face verification issues a short-lived, one-time server token
+- Financial transaction endpoints no longer trust `face_ok=true` from the browser
+- Admin APIs return JSON errors instead of HTML 500 pages
+- Runtime secrets and biometric files are excluded from the distribution
 
 ## Setup
 
-### 1. Install dependencies
-```bash
-pip install -r requirements.txt
+Create `.env` beside `app.py`:
+
+```env
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/faceauthbank
+FACEAUTH_ADMIN_PW=change-this-admin-password
 ```
-> Note: `dlib` requires CMake. On Ubuntu: `sudo apt install cmake build-essential`
 
-### 2. Run the web frontend
-Just open `index.html` in any browser — no server needed.
+Create the PostgreSQL database `faceauthbank`, then:
 
-### 3. Register a new user (Python CLI)
-```bash
-python register_user.py
+```powershell
+python -m pip install -r requirements.txt
+python -c "from db import init_db; init_db()"
+python app.py
 ```
-- Enter name, email, phone, address, ID proof, nominee
-- Webcam opens — look at camera, press **S** to save face
-- Account created with ₹0 balance
 
-### 4. Login & do transactions (Python CLI)
-```bash
-python authenticate_user.py
-```
-- Select your account
-- Face scan to login
-- Every transaction (deposit/withdraw/transfer) requires another face scan
+Open `http://127.0.0.1:5000`.
 
-### 5. Admin dashboard (Python CLI)
-```bash
-python admin_dashboard.py
-```
-- Password: `admin123`
-- View all users, all transactions, security logs
+## Notes
 
----
-
-## Features
-
-### Web Frontend (`index.html`)
-- Register with name + simulated face capture
-- Login with face scan simulation (90% success rate)
-- **Every transaction** triggers a face verification modal
-- Full banking: Deposit, Withdraw, Transfer, NEFT, Cheque, FD, RD, Loan
-- Virtual debit card generation
-- Admin panel: all users + all transactions + auth logs
-- Transaction history, mini statement, activity chart
-- Profile page with account details
-
-### Python Backend
-- Real webcam face capture using `face_recognition` + `opencv-python`
-- 128-D face encoding stored as `.npy` files
-- SQLite database for users, transactions, and auth logs
-- Per-transaction biometric confirmation
-- Max ₹50,000 per withdrawal
-- Full audit trail in `bank_log.txt`
-
----
-
-## Technology Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Face Detection | OpenCV (cv2) |
-| Face Recognition | face_recognition (dlib) |
-| Encoding Storage | NumPy (.npy files) |
-| Database | SQLite 3 |
-| Frontend | HTML5 + CSS3 + Vanilla JS |
-| Logging | Python logging module |
-
----
-
-## Security Features
-
-- Zero-password authentication — biometrics only
-- Every single transaction requires fresh face scan
-- Euclidean distance comparison with tolerance 0.5
-- Failed auth attempts logged with timestamp
-- Admin sees all auth events across all users
-- Transaction reference numbers for every operation
-
----
-
-*Developed as a college project demonstrating biometric banking security.*
+This is a project/demo banking system, not a production banking application. Face embeddings are still stored as local `.npy` files for compatibility with the existing project. A production deployment should encrypt biometric data, use a proper secrets manager, HTTPS, strong admin authentication, database transactions/locking, rate limiting, audit controls, and a dedicated anti-spoofing model.

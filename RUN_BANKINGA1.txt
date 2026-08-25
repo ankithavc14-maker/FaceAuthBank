@@ -1,0 +1,18 @@
+BANKINGA1 - RUN INSTRUCTIONS
+
+1. Open PowerShell in this folder.
+2. Install packages:
+   python -m pip install -r requirements.txt
+3. Create .env from .env.example and set your PostgreSQL DATABASE_URL.
+4. Make sure PostgreSQL is running.
+5. Start:
+   python app.py
+6. Open:
+   http://127.0.0.1:5000
+
+IMPORTANT:
+- Do not open index.html directly with file://.
+- The login, register, user dashboard, and admin dashboard are separate screens.
+- Admin logout returns to the home screen.
+- Admin can deactivate active accounts.
+- Registration blocks duplicate active names and duplicate enrolled faces.
