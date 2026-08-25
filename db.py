@@ -152,8 +152,13 @@ class PGConnection:
 
 def get_db():
     conn = psycopg.connect(database_url(), row_factory=dict_row)
-    return PGConnection(conn)
 
+    conn.execute('CREATE SCHEMA IF NOT EXISTS "faceauthbank"')
+    conn.commit()
+
+    conn.execute('SET search_path TO "faceauthbank", public')
+
+    return PGConnection(conn)
 def init_db():
     conn = get_db()
     try:
